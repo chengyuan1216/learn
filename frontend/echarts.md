@@ -6,7 +6,7 @@
 
 ### 1-1、静态api
 
-#### init()
+#### 1-1-1、init()
 
 使用： echars.init(dom， theme, opts)
 
@@ -27,7 +27,7 @@ opts:  附加参数。
 
 
 
-connect()
+#### 1-1-2、connect()
 
 多个图表的联动。
 
@@ -42,29 +42,29 @@ echarts.connect([chart1, chart2]);
 
 
 
-#### disconnect()
+#### 1-1-3、disconnect()
 
 解除图表实例的联动，如果只需要移除单个实例，可以将通过将该图表实例 `group` 设为空。
 
 
 
-#### dispose()
+#### 1-1-4、dispose()
 
 销毁实例。
 
-#### getInstanceByDom()
+#### 1-1-5、getInstanceByDom()
 
 获取 dom 容器上的echarts实例。
 
-#### registerMap()
+#### 1-1-6、registerMap()
 
-#### registerTheme()
+#### 1-1-7、registerTheme()
 
-#### graphic()
+#### 1-1-8、graphic()
 
-#### graphic.clipPointsByRect()
+#### 1-1-9、graphic.clipPointsByRect()
 
-#### graphic.clipRectByRect()
+#### 1-1-10、graphic.clipRectByRect()
 
 
 
@@ -526,11 +526,210 @@ chart.on('mouseover', {seriesIndex: 1, name: 'xx'}, function (params) {
 
 ## 2、配置项
 
-### events
+### 2-1、实例全局配置
 
-### events
+### 2-2、实例组件配置
 
-### events
+#### 2-2-1、title组件
+
+标题组件，包含主标题和副标题。在 ECharts 2.x 中单个 ECharts 实例最多只能拥有一个标题组件。但是在 ECharts 3 中可以存在任意多个标题组件，这在需要标题进行排版，或者单个实例中的多个图表都需要标题时会比较有用。
+
+- **zlevel**：用于 Canvas 分层，不同zlevel值的图形会放置在不同的 Canvas 中，Canvas 分层是一种常见的优化手段。我们可以把一些图形变化频繁（例如有动画）的组件设置成一个单独的zlevel。需要注意的是过多的 Canvas 会引起内存开销的增大，在手机端上需要谨慎使用以防崩溃。zlevel 大的 Canvas 会放在 zlevel 小的 Canvas 的上面。
+- **z值**：组件的所有图形的z值。控制图形的前后顺序。z值小的图形会被z值大的图形覆盖。z相比zlevel优先级更低，而且不会创建新的 Canvas。
+- **left**：grid 组件离容器左侧的距离。left 的值可以是像 20 这样的具体像素值，可以是像 '20%' 这样相对于容器高宽的百分比，也可以是 'left', 'center', 'right'。如果 left 的值为'left', 'center', 'right'，组件会根据相应的位置自动对齐。
+
+```
+        title: {
+          id: 1, // 组件 ID。默认不指定。指定则可用于在 option 或者 API 中引用组件。
+          show: true, // 是否显示标题组件。默认true。
+          textAlign: 'left', // 整体（包括 text 和 subtext）的水平对齐。
+          textVerticalAlign: 'center',
+          triggerEvent: true, // 是否触发事件
+          padding: 100, 
+          // 标题内边距，单位px，默认各方向内边距为5，接受数组分别设定上右下左边距。
+          itemGap: 100, // 主副标题之间的间距。
+          zlevel: 0, // 默认 0。
+          z: 2, // 。
+          left: 'center', // 
+          top: 'center',
+          // right: 20,
+          // bottom: 20,
+          backgroundColor: 'rgb(128, 128, 128)', // 背景颜色
+          borderColor: '#000', // 边框颜色
+          borderWidth: 10,
+          borderRadius: 50,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+          shadowBlur: 10,
+          shadowOffsetX: 100,
+          shadowOffsetY: 100,
+          
+          // 主标题
+          text: 'title', // 主标题文本，支持使用 \n 换行。默认 ''。
+          link: 'http://www.baidu.com', 
+          // 主标题文本超链接。 默认''。注意不加协议是相对地址。
+          target: 'blank', // 指定窗口打开主标题超链接。默认 blank, 可选 blank | self。
+          textStyle: { // 主标题
+            color: '#ff0000', // 字体颜色
+            fontStyle: 'italic', // 字体风格
+            fontWeight: 'bold', // 文字字体的粗细
+            fontFamily: 'Microsoft YaHei',
+            fontSize: 20,
+            align: 'left',
+            verticalAlign: 'top',
+            lineHeight: 50,
+            width: 50,
+            height: 50,
+            textBorderColor: '#000',
+            textShadowColor : '#00ff00',
+            textShadowBlur: 5,
+            textShadowOffsetX: 5,
+            textShadowOffsetY: 5,
+            rich: { // 富文本样式
+
+            },
+          },
+          
+          // 子标题
+          subtext: 'sub title',
+          sublink: 'www.baidu.com',
+          subtarget: 'self',
+          subtextStyle: {} // 副标题样式与主标题一致
+        }
+```
+
+
+
+#### 2-2-1、**legend**组件
+
+图例组件。图列整体是一个组件， 其内部包含多个项目， 每一个项目都有它的图标和文字。
+
+所以在设置样式是要清楚是给图例设置还是给图标设置。
+
+图例组件展现了不同系列的标记(symbol)，颜色和名字。可以通过点击图例控制哪些系列不显示。
+
+ECharts 3 中单个 echarts 实例中可以存在多个图例组件，会方便多个图例的布局。
+
+当图例数量过多时，可以使用 [滚动图例（垂直）](https://echarts.baidu.com/gallery/editor.html?c=pie-legend&edit=1&reset=1) 或 [滚动图例（水平）](https://echarts.baidu.com/gallery/editor.html?c=radar2&edit=1&reset=1)，参见：[legend.type](https://echarts.baidu.com/option.html#legend.type)
+
+```
+      legend: {
+        type: 'scroll', // plain | scroll 在指定 width 时， 如果宽度不够就可以滚动
+        id: 'legend1',
+        show: true,
+        zlevel: 0,
+        z: 2,
+        left: 'center',
+        top: -5,
+        // right: 20,
+        // bottom: 20,
+        width: 200, // 图例的宽度， 注意和图例项目的宽度区分
+        height: 200,
+        orient: 'vertical', // 排列方向， vertical | horizontal
+        align: 'right', // 设置文字和图标的位置， 左右互换。
+        padding: 15, // 图例（整体）内边距，单位px，默认各方向内边距为5，接受数组分别设定上右下左边距。
+        itemGap: 10, // 图例每项之间的间隔。横向布局时为水平间隔，纵向布局时为纵向间隔。
+        itemWidth: 200, // 图例标记的图形宽度。
+        itemHeight: 10,
+        symbolKeepAspect: true, // 是否在缩放的时候保持长宽比。
+        //formatter: 'Legend {name}', // 格式化显示文字，name 是二月， 格式化后变为 Legend 二月。
+        formatter: function(name) {  // 也可以采用函数的形式。
+          return 'function function function ' + name;
+        },
+        // 图例选择的模式，控制是否可以通过点击图例改变系列的显示状态。默认开启图例选择，可以设成 false 关闭。
+        // 除此之外也可以设成 'single' 或者 'multiple' 使用单选或者多选模式。
+        // single: 二月和三月只有一个系列能显示， multiple： 都能显示。
+        selectedMode: 'multiple', 
+        inactiveColor: '#00ff00', // 图例关闭时的颜色。包括文字的图标。
+        selected: { // 设置默认打开的项目
+          '二月': false,
+          '三月': true
+        },
+        backgroundColor: '#000', // 图例背景颜色
+        borderColor: '#0000ff', // 图例的边框颜色， 必须设置borderWidth
+        borderWidth: 20,
+        borderRadius: 5, //图例的圆角
+        textStyle: { // 图例的公用文本样式。
+          color: '#0000ff',
+          fontStyle: 'normal',
+          fontWeight: 'bold',
+          fontFamily: 'monospace',
+          fontSize: 10,
+          lineHeight: 10,
+          // 不管打开关闭背景颜色都是这里设置的颜色
+          // backgroundColor: '#e0e0e0',
+          // 可以支持使用图片作为背景
+          // 这里可以是图片的 URL，
+          // 或者图片的 dataURI，
+          // 或者 HTMLImageElement 对象，
+          // 或者 HTMLCanvasElement 对象。 
+          backgroundColor: {
+              image: document.querySelector('#canvas')
+          },
+          borderColor: '#000', //必须指定宽度
+          borderWidth: 2,
+          borderRadius: 5, // 文字父容器的圆角
+          padding: [5, 10, 5, 10], // 文字父容器的padding
+          shadowColor: '#00ff00', // 文字父容器的阴影颜色。
+          shadowBlur: 10, 
+          shadowOffsetX: -10,
+          shadowOffsetY: 10,
+          /* 文字块的宽度。一般不用指定，不指定则自动是文字的宽度。在想做表格项或者使用图片（参见 backgroundColor）时，可能会使用它。
+          注意，文字块的 width 和 height 指定的是内容高宽，不包含 padding。
+          width 也可以是百分比字符串，如 '100%'。表示的是所在文本块的 contentWidth（即不包含文本块的 padding）的百分之多少。之所以以 contentWidth 做基数，因为每个文本片段只能基于 content box 布局。如果以 outerWidth 做基数，则百分比的计算在实用中不具有意义，可能会超出。
+          注意，如果不定义 rich 属性，则不能指定 width 和 height。*/
+          width: 100,
+          height: 30,
+          rich: {},
+          textBorderColor: '#ff0000', // 文字本身的边框颜色
+          textBorderWidth: 2, // 文字本身的描边宽度。
+          textShadowColor: '#e0e0e0e', // 文字本身的阴影颜色。
+          textShadowBlur: 10, // 文字本身的阴影长度。
+          textShadowOffsetX: 100,
+          textShadowOffsetY: 100,
+          /**图例的 tooltip 配置，配置项同 tooltip。
+           * 默认不显示，可以在 legend 文字很多的时候对文字做裁剪并且开启 tooltip */
+          tooltip: {
+              show: true
+          }
+        },
+        /**
+         *  1、图例的数据数组。数组项通常为一个字符串，每一项代表一个系列的 name（如果是饼图，也可以是饼图单个数据的 name）。图例组件会自动根据对应系列的图形标记（symbol）来绘制自己的颜色和标记，特殊字符串 ''（空字符串）或者 '\n'（换行字符串）用于图例的换行。
+            2、如果 data 没有被指定，会自动从当前系列中获取。多数系列会取自 series.name 或者 series.encode 的 seriesName 所指定的维度。如 饼图 and 漏斗图 等会取自 series.data 中的 name。
+            3、如果要设置单独一项的样式，也可以把该项写成配置项对象。此时必须使用 name 属性对应表示系列的 name。
+         */
+        data: ['二月', '三月'] // 如果系列的每一项都有name, data可以省略，其实legend和系列就是通过name关联的。
+      }
+```
+
+
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 2-2-1、title组件
+
+#### 
 
 
 
