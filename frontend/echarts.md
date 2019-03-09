@@ -1,70 +1,74 @@
+[TOC]
+
+
+
 ## 1、全局Api
 
-### 静态api
+### 1-1、静态api
 
-1. **init()**
+#### init()
 
-   使用： echars.init(dom， theme, opts)
+使用： echars.init(dom， theme, opts)
 
-   dom： 实例容器，一般是一个具有宽高的div元素。
+dom： 实例容器，一般是一个具有宽高的div元素。
 
-   theme: 主题。
+theme: 主题。
 
-   opts:  附加参数。
+opts:  附加参数。
 
-   ```js
-   (dom: HTMLDivElement|HTMLCanvasElement, theme?: Object|string, opts?: {
-       devicePixelRatio?: number
-       renderer?: string
-       width?: number|string
-       height? number|string
-   }) => ECharts
-   ```
+```js
+(dom: HTMLDivElement|HTMLCanvasElement, theme?: Object|string, opts?: {
+    devicePixelRatio?: number
+    renderer?: string
+    width?: number|string
+    height? number|string
+}) => ECharts
+```
 
-   
 
-2. **connect()**
 
-   多个图表的联动。
+connect()
 
-   ```js
-   // 分别设置每个实例的 group id
-   chart1.group = 'group1';
-   chart2.group = 'group1';
-   echarts.connect('group1');
-   // 或者可以直接传入需要联动的实例数组
-   echarts.connect([chart1, chart2]);
-   ```
+多个图表的联动。
 
-   
+```js
+// 分别设置每个实例的 group id
+chart1.group = 'group1';
+chart2.group = 'group1';
+echarts.connect('group1');
+// 或者可以直接传入需要联动的实例数组
+echarts.connect([chart1, chart2]);
+```
 
-3. **disconnect()**
 
-   解除图表实例的联动，如果只需要移除单个实例，可以将通过将该图表实例 `group` 设为空。
 
-   
+#### disconnect()
 
-4. **dispose()**
+解除图表实例的联动，如果只需要移除单个实例，可以将通过将该图表实例 `group` 设为空。
 
-   销毁实例。
 
-5. **getInstanceByDom()**
 
-   获取 dom 容器上的echarts实例。
+#### dispose()
 
-6. **registerMap()**
+销毁实例。
 
-7. **registerTheme()**
+#### getInstanceByDom()
 
-8. **graphic()**
+获取 dom 容器上的echarts实例。
 
-9. **graphic.clipPointsByRect()**
+#### registerMap()
 
-10. **graphic.clipRectByRect()**
+#### registerTheme()
 
-    
+#### graphic()
 
-### echartsInstance实例api
+#### graphic.clipPointsByRect()
+
+#### graphic.clipRectByRect()
+
+
+
+### 1-2、echartsInstance实例api
 
 1. **echartsInstance.group**
 
@@ -254,7 +258,7 @@
 
     action api
 
-### action api
+### 1-3、action api
 
 1. **highlight** 
 
@@ -426,7 +430,107 @@
 
 25. **takeGlobalCursor** 
 
-    
+### 1-4、events api
+
+在 ECharts 中主要通过 [on](https://echarts.baidu.com/api.html#echartsInstance.on) 方法添加事件处理函数，该文档描述了所有 ECharts 的事件列表。
+
+ECharts 中的事件分为两种，一种是鼠标事件，在鼠标点击某个图形上会触发，还有一种是 调用 [dispatchAction](https://echarts.baidu.com/api.html#echartsInstance.dispatchAction) 后触发的事件。
+
+```js
+myChart.on('click', function (params) {
+    console.log(params);
+});
+
+myChart.on('legendselectchanged', function (params) {
+    console.log(params);
+});
+
+chart.on('click', 'series.line', function (params) {
+    console.log(params);
+});
+
+chart.on('mouseover', {seriesIndex: 1, name: 'xx'}, function (params) {
+    console.log(params);
+});
+```
+
+
+
+#### 鼠标事件
+
+鼠标事件的事件参数是事件对象的数据的各个属性，对于图表的点击事件，基本参数如下，其它图表诸如饼图可能会有部分附加参数。例如饼图会有`percent`属性表示百分比，具体见各个图表类型的 label formatter 回调函数的 `params`。
+
+```
+{
+    // 当前点击的图形元素所属的组件名称，
+    // 其值如 'series'、'markLine'、'markPoint'、'timeLine' 等。
+    componentType: string,
+    // 系列类型。值可能为：'line'、'bar'、'pie' 等。当 componentType 为 'series' 时有意义。
+    seriesType: string,
+    // 系列在传入的 option.series 中的 index。当 componentType 为 'series' 时有意义。
+    seriesIndex: number,
+    // 系列名称。当 componentType 为 'series' 时有意义。
+    seriesName: string,
+    // 数据名，类目名
+    name: string,
+    // 数据在传入的 data 数组中的 index
+    dataIndex: number,
+    // 传入的原始数据项
+    data: Object,
+    // sankey、graph 等图表同时含有 nodeData 和 edgeData 两种 data，
+    // dataType 的值会是 'node' 或者 'edge'，表示当前点击在 node 还是 edge 上。
+    // 其他大部分图表中只有一种 data，dataType 无意义。
+    dataType: string,
+    // 传入的数据值
+    value: number|Array,
+    // 数据图形的颜色。当 componentType 为 'series' 时有意义。
+    color: string,
+    // 用户自定义的数据。只在 graphic component 和自定义系列（custom series）
+    // 中生效，如果节点定义上设置了如：{type: 'circle', info: {some: 123}}。
+    info: *
+}
+```
+
+鼠标事件包括 `'click'`、`'dblclick'`、`'mousedown'`、`'mousemove'`、`'mouseup'`、`'mouseover'`、`'mouseout'`、`'globalout'`、`'contextmenu'`。
+
+#### [dispatchAction](https://echarts.baidu.com/api.html#echartsInstance.dispatchAction) 触发的事件
+
+1. **legendselectchanged** 
+2. **legendselected** 
+3. **legendunselected** 
+4. **legendscroll** 
+5. **datazoom** 
+6. **datarangeselected** 
+7. **timelinechanged** 
+8. **timelineplaychanged** 
+9. **restore** 
+10. **dataviewchanged** 
+11. **magictypechanged** 
+12. **geoselectchanged** 
+13. **geoselected** 
+14. **geounselected** 
+15. **pieselectchanged** 
+16. **pieselected** 
+17. **pieunselected** 
+18. **mapselectchanged** 
+19. **mapselected** 
+20. **mapunselected** 
+21. **axisareaselected** 
+22. **focusnodeadjacency** 
+23. **unfocusnodeadjacency** 
+24. **brush** 
+25. **brushselected** 
+26. **globalCursorTaken** 
+27. **rendered** 
+28. **finished** 
+
+## 2、配置项
+
+### events
+
+### events
+
+### events
 
 
 
