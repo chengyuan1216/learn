@@ -2,7 +2,7 @@
 
 ### 静态api
 
-1. init()
+1. **init()**
 
    使用： echars.init(dom， theme, opts)
 
@@ -23,7 +23,7 @@
 
    
 
-2. connect()
+2. **connect()**
 
    多个图表的联动。
 
@@ -38,37 +38,37 @@
 
    
 
-3. disconnect()
+3. **disconnect()**
 
    解除图表实例的联动，如果只需要移除单个实例，可以将通过将该图表实例 `group` 设为空。
 
    
 
-4. dispose()
+4. **dispose()**
 
    销毁实例。
 
-5. getInstanceByDom()
+5. **getInstanceByDom()**
 
    获取 dom 容器上的echarts实例。
 
-6. registerMap()
+6. **registerMap()**
 
-7. registerTheme()
+7. **registerTheme()**
 
-8. graphic()
+8. **graphic()**
 
-9. graphic.clipPointsByRect()
+9. **graphic.clipPointsByRect()**
 
-10. graphic.clipRectByRect()
+10. **graphic.clipRectByRect()**
 
     
 
 ### echartsInstance实例api
 
-1. echartsInstance.group
+1. **echartsInstance.group**
 
-2. echartsInstance.setOption({})
+2. **echartsInstance.setOption({})**
 
    设置图表实例的配置项以及数据，万能接口，所有参数和数据的修改都可以通过 `setOption` 完成，ECharts 会合并新的参数和数据，然后刷新图表。如果开启[动画](https://echarts.baidu.com/api.html#option.html#option.animation)的话，ECharts 找到两组数据之间的差异然后通过合适的动画去表现数据的变化。
 
@@ -82,23 +82,23 @@
 
    
 
-3. echartsInstance.getWidth()
+3. **echartsInstance.getWidth()**
 
    获取容器的宽度。
 
-4. echartsInstance.getHeight()
+4. **echartsInstance.getHeight()**
 
    获取容器的高度。
 
-5. echartsInstance.getDom()
+5. **echartsInstance.getDom()**
 
    获取实例上的dom节点。
 
-6. echartsInstance.getOption()
+6. **echartsInstance.getOption()**
 
    **获取当前实例中维护的 `option` 对象，返回的 `option` 对象中包含了用户多次 `setOption` 合并得到的配置项和数据，也记录了用户交互的状态，例如图例的开关，数据区域缩放选择的范围等等。所以从这份 `option` 可以恢复或者得到一个新的一模一样的实例。**
 
-7. echartsInstance.resize()
+7. **echartsInstance.resize()**
 
    改变图表尺寸，在容器大小发生改变时需要手动调用。
 
@@ -112,7 +112,7 @@
 
    
 
-8. echartsInstance.dispatchAction()
+8. **echartsInstance.dispatchAction()**
 
    触发图表行为，例如图例开关`legendToggleSelect`, 数据区域缩放`dataZoom`，显示提示框`showTip`等等，更多见 [action](https://echarts.baidu.com/api.html#action) 和 [events](https://echarts.baidu.com/api.html#events) 的文档。
 
@@ -140,7 +140,7 @@
 
    
 
-9. echartsInstance.on()
+9. **echartsInstance.on()**
 
    绑定事件处理函数。ECharts 中的事件有两种，一种是鼠标事件，在鼠标点击某个图形上会触发，还有一种是 调用 [dispatchAction](https://echarts.baidu.com/api.html#echartsInstance.dispatchAction) 后触发的事件。每个 action 都会有对应的事件，具体见 [action](https://echarts.baidu.com/api.html#action) 和 [events](https://echarts.baidu.com/api.html#events)的文档。
 
@@ -167,7 +167,7 @@
 
    - context
 
-10. off()
+10. **off()**
 
 11. **convertToPixel** 
 
@@ -274,11 +274,159 @@
    })
    ```
 
+   ```
+   // 使第二组数据高亮
+   myChart.dispatchAction({
+   	type: 'highlight',
+   	dataIndex: 1
+   })
+   ```
+
    
 
-2. 
+2. **downplay** 
 
-3. 
+   取消高亮指定的数据图形。（取消高亮）
 
-4. 
+   通过`seriesName`或者`seriesIndex`指定系列。如果要指定某个数据可以再指定`dataIndex`或者`name`。
+
+   ```
+   dispatchAction({
+       type: 'downplay',
+       // 可选，系列 index，可以是一个数组指定多个系列
+       seriesIndex?: number|Array,
+       // 可选，系列名称，可以是一个数组指定多个系列
+       seriesName?: string|Array,
+       // 可选，数据的 index
+       dataIndex?: number,
+       // 可选，数据的 名称
+       name?: string
+   })
+   ```
+
+   ```
+   // 高亮
+   myChart.dispatchAction({
+       type: 'highlight',
+       // 可选，系列 index，可以是一个数组指定多个系列
+       // seriesIndex?: number|Array,
+       // 可选，系列名称，可以是一个数组指定多个系列
+       // seriesName?: string|Array,
+       // 可选，数据的 index
+       dataIndex: 1,
+       // 可选，数据的 名称
+       // name?: string
+   })
+   // 取消高亮
+   setTimeout(() => {
+       myChart.dispatchAction({
+           type: 'downplay',
+           // 可选，数据的 index
+           dataIndex: 1
+       })
+   }, 3000)
+   ```
+
+   
+
+3. **legendSelect** 
+
+   选中图例。
+
+   ```
+   dispatchAction({
+       type: 'legendSelect',
+       // 图例名称
+       name: string
+   })
+   ```
+
+   ```
+   myChart.dispatchAction({
+       type: 'legendSelect',
+       // 图例名称
+       name: '二月'
+   })
+   // 相当于手动点击了二月份对应的legend
+   ```
+
+   
+
+4. **legendUnSelect** 
+
+   取消选中图例。
+
+   ```js
+   myChart.dispatchAction({
+       type: 'legendUnSelect',
+       // 图例名称
+       name: '二月'
+   })
+   ```
+
+   
+
+5. **legendToggleSelect** 
+
+   切换图例的选中状态。如果是选中状态则切换到不选中， 不选中切换到选中。
+
+   ```js
+   // 这个例子表示每隔300ms 就会切换一次  
+   setInterval(() => {
+       myChart.dispatchAction({
+           type: 'legendToggleSelect',
+           name: '二月'
+       })
+   }, 300)
+   ```
+
+   
+
+6. **legendScroll** 
+
+7. **showTip** 
+
+8. **hideTip** 
+
+9. **dataZoom** 
+
+10. **selectDataRange** 
+
+11. **timeline** 
+
+    [时间轴组件](https://echarts.baidu.com/option.html#timeline)相关的行为，必须引入[时间轴组件](https://echarts.baidu.com/option.html#timeline)后才能使用。
+
+12. **restore** 
+
+    工具栏组件](https://echarts.baidu.com/option.html#toolbox)相关的行为，必须引入[工具栏组件](https://echarts.baidu.com/option.html#toolbox)后才能使用。
+
+13. **pieSelect** 
+
+14. **pieUnSelect** 
+
+15. **pieToggleSelect** 
+
+16. **geoSelect** 
+
+17. **geoUnSelect** 
+
+18. **geoToggleSelect** 
+
+19. **mapSelect** 
+
+20. **mapUnSelect** 
+
+21. **mapToggleSelect** 
+
+22. **focusNodeAdjacency** 
+
+23. **unfocusNodeAdjacency** 
+
+24. **brush** 
+
+25. **takeGlobalCursor** 
+
+    
+
+
 
