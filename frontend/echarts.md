@@ -190,44 +190,95 @@
         })
     ```
 
-    ![](D:\github\img\1.PNG)
-
 15. **hideLoading**
 
-16. 
+    隐藏动画效果。没有参数。
 
-17. 
+16. **getDataURL** ()
 
-18. 
+    导出图表图片，返回一个 base64 的 URL，可以设置为`Image`的`src`。canvas 转成图片。
 
-19. 
+    ```js
+    (opts: {
+        // 导出的格式，可选 png, jpeg
+        type?: string,
+        // 导出的图片分辨率比例，默认为 1。
+        pixelRatio?: number,
+        // 导出的图片背景色，默认使用 option 里的 backgroundColor
+        backgroundColor?: string,
+        // 忽略组件的列表，例如要忽略 toolbox 就是 ['toolbox']
+        excludeComponents?: Array.<string>
+    }) => string
+    ```
 
-20. 
+    ```
+       // 通过点击来将canvas转换成dataUrl
+       // 如果要想实现查看图片和自动下载可以将 dataUrl 赋值给图片的 src
+       myChart.on('dblclick', () => {
+          const dataUrl = myChart.getDataURL({
+            type: 'png',
+            pixelRatio: 1,
+            backgroundColor: '#fff',
+            excludeComponents: []
+          })
+          window.console.log('dataUrl', dataUrl)
+        });
+    ```
 
-21. 
+    
 
-22. 
+17. **getConnectedDataURL** 
 
-23. 
+    导出联动的图片， 参数与getDataURL一致。
 
-24. 
+18. **appendData** ()
 
-25. 
+19. **clear** ()
 
-26. 
+    清空当前实例，会移除实例中所有的组件和图表。清空后调用 [getOption](https://echarts.baidu.com/api.html#echartsInstance.getOption) 方法返回一个`{}`空对象。
 
-27. 
+    ```js
+        myChart.on('dblclick', () => {
+          // 清空当前实例
+          myChart.clear()
+        });
+    ```
 
-28. 
+    
 
-29. 
+20. **isDisposed** 
 
-30. 
+    当前实例是否已经被释放。
 
-31. 
+21. **dispose** 
 
-32. 
+    action api
 
-33. 
+### action api
 
-34. 
+1. **highlight** 
+
+   通过`seriesName`或者`seriesIndex`指定系列。如果要再指定某个数据可以再指定`dataIndex`或者`name`。
+
+   ```
+   dispatchAction({
+       type: 'highlight',
+       // 可选，系列 index，可以是一个数组指定多个系列
+       seriesIndex?: number|Array,
+       // 可选，系列名称，可以是一个数组指定多个系列
+       seriesName?: string|Array,
+       // 可选，数据的 index
+       dataIndex?: number,
+       // 可选，数据的 名称
+       name?: string
+   })
+   ```
+
+   
+
+2. 
+
+3. 
+
+4. 
+
