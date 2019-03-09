@@ -140,14 +140,94 @@
 
    
 
-9. 
+9. echartsInstance.on()
 
-10. 
+   绑定事件处理函数。ECharts 中的事件有两种，一种是鼠标事件，在鼠标点击某个图形上会触发，还有一种是 调用 [dispatchAction](https://echarts.baidu.com/api.html#echartsInstance.dispatchAction) 后触发的事件。每个 action 都会有对应的事件，具体见 [action](https://echarts.baidu.com/api.html#action) 和 [events](https://echarts.baidu.com/api.html#events)的文档。
 
-11. 
+   参数：
 
-12. 
+   - eventName
 
-13. 
+     小写的事件名称。
 
-14. 
+   - query
+
+     可选的过滤条件，能够只在指定的组件或者元素上进行响应。可为 `string` 或者 `Object`。
+
+     ```
+     chart.on('click', 'series', function () {...});
+       chart.on('click', 'series.line', function () {...});
+       chart.on('click', 'dataZoom', function () {...});
+       chart.on('click', 'xAxis.category', function () {...});
+     ```
+
+     
+
+   - handler
+
+   - context
+
+10. off()
+
+11. **convertToPixel** 
+
+12. **convertFromPixel** 
+
+13. **containPixel** 
+
+14. **showLoading** 
+
+    显示加载动画效果。可以在加载数据前手动调用该接口显示加载动画，在数据加载完成后调用 [hideLoading](https://echarts.baidu.com/api.html#echartsInstance.hideLoading) 隐藏加载动画。
+
+    ```js
+        // 设置动画可以在请求后台接口返回之前有个动画效果而不是空白
+        myChart.showLoading('default', {
+          text: 'loading', // 提示文字
+          color: '#c23531', // 转圈圈的颜色
+          textColor: '#000', // 提示文字的颜色
+          maskColor: 'rgba(255, 255, 255, 0.8)', // 整个遮罩的背景颜色
+          zlevel: 0 // ？
+        })
+    ```
+
+    ![](D:\github\img\1.PNG)
+
+15. **hideLoading**
+
+16. 
+
+17. 
+
+18. 
+
+19. 
+
+20. 
+
+21. 
+
+22. 
+
+23. 
+
+24. 
+
+25. 
+
+26. 
+
+27. 
+
+28. 
+
+29. 
+
+30. 
+
+31. 
+
+32. 
+
+33. 
+
+34. 
