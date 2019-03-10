@@ -366,13 +366,18 @@ grow, mark and tweak your common history
 **commit**     Record changes to the repository                                  
 **diff**       Show changes between commits, commit and working tree, etc        
 **merge**      Join two or more development histories together                   
-**rebase**     Reapply commits on top of another base tip                        
+**rebase**     
+
+在另一个分支基础之上重新应用，用于把一个分支的修改合并到当前分支。
+
 **tag**        Create, list, delete or verify a tag object signed with GPG       
 
 
 
-collaborate (see also: git help workflows)                                      
-**fetch**      Download objects and refs from another repository                 
+
+
+**fetch**     
+
 **pull**       
 
 取回远程主机某个分支的更新，再与本地的指定分支合并，它的完整格式稍稍有点复杂。
@@ -477,3 +482,4 @@ git push --set-upstream origin feature
 git push -u origin feature 
 ```
 
+test
