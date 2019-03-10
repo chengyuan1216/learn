@@ -375,3 +375,14 @@ collaborate (see also: git help workflows)
 **fetch**      Download objects and refs from another repository                 
 **pull**       Fetch from and integrate with another repository or a local branch
 **push**       Update remote refs along with associated objects                  
+
+​                          
+
+# Q& A
+
+1、将本地仓库新建的feature分支提交到远程仓库时报下面的错误。
+
+The current branch feature has no upstream branch.                       
+To push the current branch and set the remote as upstream, use                  
+git push --set-upstream origin feature            
+
