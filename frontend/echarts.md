@@ -703,9 +703,155 @@ ECharts 3 中单个 echarts 实例中可以存在多个图例组件，会方便�
 
 
 
-#### 2-2-1、title组件
+#### 2-2-1、grid组件
 
-#### 2-2-1、title组件
+单独设置 grid 组件只是提供一个坐标系的容器，并不会出现坐标轴， 需要配合axis组件。
+
+```
+      grid: {
+        id: 'grid1',
+        show: true,
+        zlevel: 0,
+        z: 2,
+        // 整个坐标系矩形在canvas画布中的定位
+        left: '10%',
+        top: 60,
+        right: '10%',
+        bottom: 60,
+        width: 'auto',
+        height: 'auto',
+        containLabel: false, // grid 区域是否包含坐标轴的刻度标签。
+        // 下面设置的是包含整个坐标系的矩形的四条边。
+        backgroundColor: 'green',
+        borderColor: '#ff0000', // 网格的边框颜色。
+        borderWidth: 10, // 网格的边框线宽
+        shadowBlur: 10,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowOffsetX: 5,
+        shadowOffsetY: 5,
+        tooltip: {} // 提示框
+      }
+```
+
+
+
+#### 2-2-1、组件
+
+```
+                    xAxis: {
+                        id: 'xaxis1',
+                        show: true,
+                        gridIndex: 0, // x 轴所在的 grid 的索引，默认位于第一个 grid。
+                        position: 'bottom', // 默认 grid 中的第一个 x 轴在 grid 的下方（'bottom'），第二个 x 轴视第一个 x 轴的位置放在另一侧。
+                        offset: 0, // X 轴相对于默认位置的偏移，在相同的 position 上有多个 X 轴的时候有用。
+                        /**
+                         * 'value' 数值轴，适用于连续数据。
+                         'category' 类目轴，适用于离散的类目数据，为该类型时必须通过 data 设置类目数据。
+                        'time' 时间轴，适用于连续的时序数据，与数值轴相比时间轴带有时间的格式化，在刻度计算上也有所不同，例如会根据跨度的范围来决定使用月，星期，日还是小时范围的刻度。
+                        'log' 对数轴。适用于对数数据。
+                        */
+                        type: 'value', // 坐标轴表示的数据类型
+
+                        // 坐标轴名称的设置
+                        name: '坐标轴的名称',
+                        nameLocation: 'center', // start | middle(center) | end 
+                        nameGap: 30,
+                        nameRotate: 0,
+                        nameTextStyle: {
+                            color: 'green', // 坐标轴名称的颜色，默认取 axisLine.lineStyle.color。
+                            fontStyle: 'normal',
+                            fontWeight: 'normal',
+                            fontFamily: 'sans-serif',
+                            fontSize: 12,
+                            align: 'center',
+                            verticalAlign: 'bottom',
+                            lineHeight: 12,
+                            backgroundColor: 'transparent',
+                            borderColor: 'pink',
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            padding: [4, 4],
+                            shadowBlur: 5,
+                            shadowColor: 'green',
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 0,
+                            width: 100, //
+                            height: 12,
+                            textBorderColor: 'transparent',
+                            textBorderWidth: 0,
+                            textShadowColor: 'transparent',
+                            textShadowBlur: 0,
+                            textShadowOffsetX: 0,
+                            textShadowOffsetY: 0,
+                            rich: {
+
+                            },
+                        },
+
+                        min: 'dataMin', // 坐标轴刻度最小值。 可以是function, 也可以是一个数值
+                        max: 2000, // 当设置的坐标轴最大值不够大时可能会使得数据显示不完全
+                        // 在设置 min 和 max 之后该配置项无效。
+                        scale: false, // 是否是脱离 0 值比例。设置成 true 后坐标刻度不会强制包含零刻度。在双数值轴的散点图中比较有用。
+                        splitNumber: 5, // 坐标轴的分割段数，需要注意的是这个分割段数只是个预估值，最后实际显示的段数会在这个基础上根据分割后坐标轴刻度显示的易读程度作调整。
+                        minInterval: 500, // 指定分割坐标系时最小的分割大小
+                        maxInterval: 600,
+                        silent: false, // 坐标轴是否是静态无法交互。
+                        triggerEvent: false, // 坐标轴的标签是否响应和触发鼠标事件，默认不响应。
+
+                        // 坐标轴线相关设置
+                        axisLine: {
+                            show: true,
+                            onZero: true, // X 轴或者 Y 轴的轴线是否在另一个轴的 0 刻度上，只有在另一个轴为数值轴且包含 0 刻度时有效。
+                            onZeroAxisIndex: 0, // 当有双轴时，可以用这个属性手动指定，在哪个轴的 0 刻度上。
+                            symbol: ['none', 'arrow'], // 轴线两边的箭头。
+                            symbolSize: [10, 20], // 轴线两边的箭头的大小，第一个数字表示宽度（垂直坐标轴方向），第二个数字表示高度（平行坐标轴方向）。
+                            symbolOffset: [10, 10], // 轴线两边的箭头的偏移
+                            lineStyle: {}
+                        },
+
+                        // 坐标轴刻度的相关设置。
+                        axisTick: {
+                            show: true, // 是否显示坐标轴刻度
+                            alignWithLabel: false, // 类目轴中在 boundaryGap 为 true 的时候有效，可以保证刻度线和标签对齐
+                            interval: 'auto',
+                            inside: true, // 坐标轴刻度是否朝内，默认朝外。
+                            length: 5, // 坐标轴刻度的长度。
+                            lineStyle: {}, // 刻度的样式
+                        },
+
+                        // 坐标轴刻度标签(即刻度下面的说明)的相关设置。
+                        axisLabel: { 
+                            show: true
+                        },
+
+                        // 坐标轴在 grid 区域中的分隔线。
+                        splitLine: {
+                            show: true,
+                        },
+
+                        // 坐标轴在 grid 区域中的分隔区域，默认不显示。
+                        splitArea: {
+                            show: true
+                        },
+
+                        // 当鼠标移入坐标轴时坐标的指示器
+                        axisPointer: {
+                            show: true,
+                        },
+                        /*
+                            如果设置了 type 是 'category'，但没有设置 axis.data，则 axis.data 的内容会自动从 series.data 中获取，这会比较方便。不过注意，axis.data 指明的是 'category' 轴的取值范围。如果不指定而是从 series.data 中获取，那么只能获取到 series.data 中出现的值。比如说，假如 series.data 为空时，就什么也获取不到。
+                        */
+                        // 类目数据，在类目轴（type: 'category'）中有效。
+                        data: ['100', '200', '300', '500', '800', '950', '1000']
+                    },
+                    yAxis: {},
+                    series: [{
+                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        type: 'line'
+                    }]
+```
+
+
 
 #### 2-2-1、title组件
 
