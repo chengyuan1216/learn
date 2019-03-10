@@ -333,7 +333,7 @@ git branch -d dev
 
 ## 15、解决冲突
 
-## 16、分支管理策略
+## 16、[分支管理策略](https://www.yiibai.com/git/git_pull.html)
 
 通常，合并分支时，如果可能，Git会用`Fast forward`模式，但这种模式下，删除分支后，会丢掉分支信息。
 
@@ -373,10 +373,91 @@ grow, mark and tweak your common history
 
 collaborate (see also: git help workflows)                                      
 **fetch**      Download objects and refs from another repository                 
-**pull**       Fetch from and integrate with another repository or a local branch
-**push**       Update remote refs along with associated objects                  
+**pull**       
 
-​                          
+取回远程主机某个分支的更新，再与本地的指定分支合并，它的完整格式稍稍有点复杂。
+
+将远程存储库中的更改合并到当前分支中。在默认模式下，`git pull`是`git fetch`后跟`git merge FETCH_HEAD`的缩写。
+
+示例 :
+
+```
+git pull <远程主机名> <远程分支名>:<本地分支名>
+```
+
+比如，要取回`origin`主机的`next`分支，与本地的`master`分支合并，需要写成下面这样
+
+```
+git pull origin next:master
+```
+
+如果远程分支(`next`)要与当前分支合并，则冒号后面的部分可以省略。上面命令可以简写为：
+
+```
+git pull origin next
+```
+
+如果当前分支与远程分支存在追踪关系，`git pull`就可以省略远程分支名。
+
+```
+git pull origin
+```
+
+如果当前分支只有一个追踪分支，连远程主机名都可以省略。
+
+```
+git pull
+```
+
+
+
+**push**           
+
+用于将本地分支的更新，推送到远程主机。它的格式与`git pull`命令相似。           
+
+语法：
+
+```
+git push <远程主机名> <本地分支名>:<远程分支名>
+```
+
+示例：
+
+将本地的`master`分支推送到`origin`主机的`master`分支。如果`master`不存在，则会被新建。
+
+```
+git push origin master
+```
+
+如果省略本地分支名，则表示删除指定的远程分支，因为这等同于推送一个空的本地分支到远程分支。
+
+```
+$ git push origin :master
+# 等同于
+$ git push origin --delete master
+```
+
+如果当前分支与远程分支之间存在追踪关系，则本地分支和远程分支都可以省略。
+
+下面的命令表示，将当前分支推送到`origin`主机的对应分支。
+
+```
+git push origin
+```
+
+ 如果当前分支只有一个追踪分支，那么主机名都可以省略。
+
+```
+git push
+```
+
+如果当前分支与多个主机存在追踪关系，则可以使用`-u`选项指定一个默认主机，这样后面就可以不加任何参数使用`git push`。下面命令将本地的`master`分支推送到`origin`主机，同时指定`origin`为默认主机，后面就可以不加任何参数使用`git push`了。
+
+```
+git push -u origin master
+```
+
+
 
 # Q& A
 
