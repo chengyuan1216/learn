@@ -237,3 +237,16 @@ git checkout -- test.txt
 ```
 
 就算删除了也可以恢复到之前的版本进行checkout, 但是只能还原到之前的版本。
+
+在当前版本中删除 a.txt 文件， 执行 checkout 命令将会报下面的错误：
+
+```
+error: pathspec 'a.txt' did not match any file(s) known to git
+```
+
+
+
+思考：
+
+为什么在当前版本中删除后， checkout会报错， 切换到上一个版本后再切回来， checkout却可以找到之前被删掉的文件。
+
