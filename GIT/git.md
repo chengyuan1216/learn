@@ -386,3 +386,13 @@ The current branch feature has no upstream branch.
 To push the current branch and set the remote as upstream, use                  
 git push --set-upstream origin feature            
 
+解决办法：
+
+把本地feature分支与远程的feature分支关联， -u表示同时建立关联，以后再推送到远程只需git push。
+
+使用下面的命令即使远程没有你要关联的分支，它也会自动创建一个出来，以实现关联。
+
+```
+git push -u origin feature 
+```
+
