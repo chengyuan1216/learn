@@ -54,5 +54,19 @@ export default new Vuex.Store({
   state,
   getters,
   actions,
-  mutations
+  mutations,
+  modules: {
+    test: {
+      state: {
+        a: 1
+      },
+      getters: {
+        a: state => state.a,
+        count(state, getter, rootState, rootGetter) {
+          cons
+          return state.a * 2
+        }
+      }
+    }
+  }
 })
