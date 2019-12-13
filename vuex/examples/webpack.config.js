@@ -2,13 +2,13 @@ const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
-
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = function(args = {}) {
-  let isBuild = args.target === 'production'
+  let isProduct = args.target === 'production'
   let config = {
-    mode: 'development',//isBuild?'production':'development',
-    devtool: isBuild?'source-map':'inline-source-map',
+    mode: 'development',//isProduct?'production':'development',
+    devtool: isProduct?'source-map':'inline-source-map',
     /**
      {
       chat: [
@@ -83,6 +83,23 @@ module.exports = function(args = {}) {
     ]
   
   }
+
+  if (isProduct) {
+    config.output.publicPath = ''
+    config.plugins = config.plugins.concat([
+      new HtmlWebpackPlugin({
+        chunks:['chat'],
+        filename:path.resolve(__dirname, '__build__/chat.html'),
+        template: path.resolve(__dirname, 'chat/index.html'),
+        minify:{
+            collapseWhitespace:true
+        },
+        hash: true,
+        //title: ''
+      })
+    ])
+  }
+
   console.log('entry', config.entry)
   return config
 }
