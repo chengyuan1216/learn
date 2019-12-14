@@ -38,7 +38,6 @@ export class Store {
     // 模块命名空间
     this._modulesNamespaceMap = Object.create(null)
     this._subscribers = []
-    // 状态管理是通过vm实例来实现响应式的
     this._watcherVM = new Vue()
     this._makeLocalGettersCache = Object.create(null)
 
@@ -87,6 +86,7 @@ export class Store {
   }
 
   commit (_type, _payload, _options) {
+    debugger
     // check object-style commit
     const {
       type,
@@ -95,6 +95,7 @@ export class Store {
     } = unifyObjectStyle(_type, _payload, _options)
 
     const mutation = { type, payload }
+    // 获取事件对应的handler
     const entry = this._mutations[type]
     if (!entry) {
       if (process.env.NODE_ENV !== 'production') {
@@ -102,11 +103,13 @@ export class Store {
       }
       return
     }
+    // 遍历执行所有handler
     this._withCommit(() => {
       entry.forEach(function commitIterator (handler) {
         handler(payload)
       })
     })
+    // 在commit的同时通知所有的插件
     this._subscribers.forEach(sub => sub(mutation, this.state))
 
     if (
@@ -175,6 +178,7 @@ export class Store {
     return genericSubscribe(subs, this._actionSubscribers)
   }
 
+  // 可用监听状态的改变
   watch (getter, cb, options) {
     if (process.env.NODE_ENV !== 'production') {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
@@ -280,6 +284,8 @@ function resetStoreVM (store, state, hot) {
   const silent = Vue.config.silent
   // 取消所有的错误警告
   Vue.config.silent = true
+
+  // 状态管理是通过vm实例来实现响应式的
   store._vm = new Vue({
     data: {
       $$state: state
@@ -507,6 +513,7 @@ function getNestedState (state, path) {
   return path.reduce((state, key) => state[key], state)
 }
 
+// 处理参数
 function unifyObjectStyle (type, payload, options) {
   if (isObject(type) && type.type) {
     options = payload
@@ -521,6 +528,7 @@ function unifyObjectStyle (type, payload, options) {
   return { type, payload, options }
 }
 
+// install方法供Vue.use()调用
 export function install (_Vue) {
   if (Vue && _Vue === Vue) {
     if (process.env.NODE_ENV !== 'production') {

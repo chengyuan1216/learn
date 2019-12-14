@@ -88,4 +88,12 @@ let store = new Vuex.Store({
   }]
 })
 window.store = store
+
+// 监听状态的改变
+store.watch(function(state, getters){
+  console.log(state, getters, state.count)
+  return state.count
+}, function callback() {
+  console.log('callback')
+})
 export default store
