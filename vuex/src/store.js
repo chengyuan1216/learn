@@ -33,10 +33,12 @@ export class Store {
     this._actionSubscribers = []
     this._mutations = Object.create(null)
     this._wrappedGetters = Object.create(null)
-    // 
+    // 所有模块
     this._modules = new ModuleCollection(options)
+    // 模块命名空间
     this._modulesNamespaceMap = Object.create(null)
     this._subscribers = []
+    // 状态管理是通过vm实例来实现响应式的
     this._watcherVM = new Vue()
     this._makeLocalGettersCache = Object.create(null)
 
@@ -52,12 +54,13 @@ export class Store {
 
     // strict mode
     this.strict = strict
-
+    // 根组件的状态
     const state = this._modules.root.state
 
     // init root module.
     // this also recursively registers all sub-modules
     // and collects all module getters inside this._wrappedGetters
+    // 安装模块
     installModule(this, state, [], this._modules.root)
 
     // initialize the store vm, which is responsible for the reactivity
@@ -275,6 +278,7 @@ function resetStoreVM (store, state, hot) {
   // suppress warnings just in case the user has added
   // some funky global mixins
   const silent = Vue.config.silent
+  // 取消所有的错误警告
   Vue.config.silent = true
   store._vm = new Vue({
     data: {
@@ -302,7 +306,9 @@ function resetStoreVM (store, state, hot) {
 }
 
 function installModule (store, rootState, path, module, hot) {
+  // 是否是根模块
   const isRoot = !path.length
+  // 获取命名空间
   const namespace = store._modules.getNamespace(path)
 
   // register in namespace map
@@ -329,6 +335,7 @@ function installModule (store, rootState, path, module, hot) {
     })
   }
 
+  // 根据namespace, 重新定义...
   const local = module.context = makeLocalContext(store, namespace, path)
 
   module.forEachMutation((mutation, key) => {
@@ -347,6 +354,7 @@ function installModule (store, rootState, path, module, hot) {
     registerGetter(store, namespacedType, getter, local)
   })
 
+  // 遍历安装子模块
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
@@ -365,6 +373,7 @@ function makeLocalContext (store, namespace, path) {
       const { payload, options } = args
       let { type } = args
 
+      // 如果options.root为true的话表示修改的是根模块的数据
       if (!options || !options.root) {
         type = namespace + type
         if (process.env.NODE_ENV !== 'production' && !store._actions[type]) {
@@ -402,6 +411,7 @@ function makeLocalContext (store, namespace, path) {
         : () => makeLocalGetters(store, namespace)
     },
     state: {
+      // 根据path去获取值
       get: () => getNestedState(store.state, path)
     }
   })
@@ -442,6 +452,7 @@ function registerMutation (store, type, handler, local) {
 }
 
 function registerAction (store, type, handler, local) {
+  // entry用于存储handler, 这是一个数组
   const entry = store._actions[type] || (store._actions[type] = [])
   entry.push(function wrappedActionHandler (payload) {
     let res = handler.call(store, {
@@ -452,6 +463,7 @@ function registerAction (store, type, handler, local) {
       rootGetters: store.getters,
       rootState: store.state
     }, payload)
+    // 返回的是一个promise
     if (!isPromise(res)) {
       res = Promise.resolve(res)
     }

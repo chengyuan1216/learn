@@ -50,7 +50,7 @@ const getters = {
 
 // A Vuex instance is created by combining the state, mutations, actions,
 // and getters.
-export default new Vuex.Store({
+let store = new Vuex.Store({
   state,
   getters,
   actions,
@@ -63,10 +63,29 @@ export default new Vuex.Store({
       getters: {
         a: state => state.a,
         count(state, getter, rootState, rootGetter) {
-          cons
           return state.a * 2
+        },
+        rootCount(state, getter, rootState, rootGetter) {
+          return rootState.count * 2
+        }
+      }
+    },
+    testNamespace: {
+      namespaced: true,
+      state: {
+        a: 1
+      },
+      getters: {
+        geta(state) {
+          return state.a * 100
         }
       }
     }
-  }
+  },
+  plugins: [function(store){
+    store.subscribe((mutation, state) => {
+    })
+  }]
 })
+window.store = store
+export default store
