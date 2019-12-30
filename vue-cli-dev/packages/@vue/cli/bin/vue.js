@@ -4,8 +4,10 @@
 // The user may be on a very old node version
 
 const chalk = require('chalk')
+// 版本检查
 const semver = require('semver')
 const requiredVersion = require('../package.json').engines.node
+// 拼写建议
 const didYouMean = require('didyoumean')
 
 // Setting edit distance to 60% of the input string's length
@@ -33,6 +35,7 @@ if (semver.satisfies(process.version, '9.x')) {
 
 const fs = require('fs')
 const path = require('path')
+// 用于转换 Windows 反斜杠路径转换为正斜杠路径 \ => /。
 const slash = require('slash')
 const minimist = require('minimist')
 
