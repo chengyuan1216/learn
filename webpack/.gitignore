@@ -7,6 +7,7 @@
 /benchmark/js
 /benchmark/fixtures
 /examples/**/dist
+/examples/**/node_modules
 /coverage
 .DS_Store
 *.log
