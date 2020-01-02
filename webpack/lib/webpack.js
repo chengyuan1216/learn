@@ -78,7 +78,6 @@ const createCompiler = options => {
  * @returns {Compiler | MultiCompiler} the compiler object
  */
 const webpack = (options, callback) => {
-	debugger
 	validateSchema(webpackOptionsSchema, options);
 	/** @type {MultiCompiler|Compiler} */
 	let compiler;
