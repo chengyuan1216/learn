@@ -4,7 +4,14 @@
 3、修改代码
 
 // tapable Hook.js _tap()
-var fn1 = fn 
-fn = function callback1() {
-  return fn1(...arguments)
-}
+		var fn1 = fn
+		fn = function callback1() {
+			// debugger
+			var name = 'FileKindPlugin'
+			if (options ==  name||options.name == name) {
+				debugger
+				console.trace(type + ' Hook -> ', typeof options == 'string'? options: options.name)
+			}
+			console.error(type + ' Hook -> ', typeof options == 'string'? options: options.name)
+			return fn1(...arguments)
+		}

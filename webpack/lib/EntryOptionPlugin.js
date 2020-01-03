@@ -11,13 +11,17 @@ const EntryPlugin = require("./EntryPlugin");
 /** @typedef {import("../declarations/WebpackOptions").EntryItem} EntryItem */
 /** @typedef {import("./Compiler")} Compiler */
 
+/**
+ * 入口配置处理
+ */
 module.exports = class EntryOptionPlugin {
 	/**
 	 * @param {Compiler} compiler the compiler instance one is tapping into
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.entryOption.tap("EntryOptionPlugin", (context, entry) => {
+		compiler.hooks.entryOption.tap("EntryOptionPlugin", (context,
+		entry) => {
 			/**
 			 * @param {EntryItem} entry entry array or single path
 			 * @param {string} name entry key name

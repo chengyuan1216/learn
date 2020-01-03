@@ -31,7 +31,7 @@ class LoaderPlugin {
 		);
 
 		compiler.hooks.compilation.tap("LoaderPlugin", compilation => {
-			const moduleGraph = compilation.moduleGraph;
+			const moduleGraph = compilation.moduleGraph; // 模块图形
 			NormalModule.getCompilationHooks(compilation).loader.tap(
 				"LoaderPlugin",
 				loaderContext => {
@@ -40,7 +40,9 @@ class LoaderPlugin {
 					 * @param {LoadModuleCallback} callback callback returning the loaded module or error
 					 * @returns {void}
 					 */
+					// 加载上下文
 					loaderContext.loadModule = (request, callback) => {
+						debugger
 						const dep = new LoaderDependency(request);
 						dep.loc = {
 							name: request

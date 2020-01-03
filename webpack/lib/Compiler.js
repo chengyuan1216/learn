@@ -86,6 +86,7 @@ const isSorted = array => {
  * @param {string[]} keys the keys of the object
  * @returns {Object} the object with properties sorted by property name
  */
+// 对象key排序
 const sortObject = (obj, keys) => {
 	return keys.sort().reduce((o, k) => {
 		o[k] = obj[k];
@@ -408,7 +409,7 @@ class Compiler {
 				});
 			});
 		};
-
+		// debugger
 		this.cache.endIdle(err => {
 			if (err) return finalCallback(err);
 

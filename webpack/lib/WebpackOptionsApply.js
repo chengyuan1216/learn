@@ -58,11 +58,14 @@ class WebpackOptionsApply extends OptionsApply {
 	 * @returns {WebpackOptions} options object
 	 */
 	process(options, compiler) {
+		// 出口
 		compiler.outputPath = options.output.path;
+		// 开启这个选项可以生成一个 JSON 文件,可以使用此文件来跟踪在每次构建之间的模块变化
 		compiler.recordsInputPath = options.recordsInputPath || options.recordsPath;
 		compiler.recordsOutputPath =
 			options.recordsOutputPath || options.recordsPath;
 		compiler.name = options.name;
+		// 构建目标
 		if (typeof options.target === "string") {
 			switch (options.target) {
 				case "web": {
@@ -226,6 +229,9 @@ class WebpackOptionsApply extends OptionsApply {
 			throw new Error("Unsupported target '" + options.target + "'.");
 		}
 
+		// 将代码输出为库
+		// library --> 库名称
+		// libraryTarget --> 导出模块的类型
 		if (options.output.library || options.output.libraryTarget !== "var") {
 			const LibraryTemplatePlugin = require("./LibraryTemplatePlugin");
 			new LibraryTemplatePlugin(options.output).apply(compiler);
@@ -243,6 +249,7 @@ class WebpackOptionsApply extends OptionsApply {
 			new ModuleInfoHeaderPlugin().apply(compiler);
 		}
 
+		// source map
 		if (options.devtool) {
 			if (options.devtool.includes("source-map")) {
 				const hidden = options.devtool.includes("hidden");

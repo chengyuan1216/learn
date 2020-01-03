@@ -17,6 +17,8 @@ module.exports = class HarmonyDetectionParserPlugin {
 
 	apply(parser) {
 		parser.hooks.program.tap("HarmonyDetectionParserPlugin", ast => {
+			// 抽象语法树
+			// 判断是否是es6模块
 			const isStrictHarmony = parser.state.module.type === "javascript/esm";
 			const isHarmony =
 				isStrictHarmony ||
@@ -27,7 +29,10 @@ module.exports = class HarmonyDetectionParserPlugin {
 						statement.type === "ExportNamedDeclaration" ||
 						statement.type === "ExportAllDeclaration"
 				);
+
 			if (isHarmony) {
+
+				// 是否是异步
 				const isAsync = ast.body.some(
 					statement =>
 						(statement.type === "ImportDeclaration" ||

@@ -26,6 +26,7 @@ class LoaderTargetPlugin {
 			NormalModule.getCompilationHooks(compilation).loader.tap(
 				"LoaderTargetPlugin",
 				loaderContext => {
+					// 设置target
 					loaderContext.target = this.target;
 				}
 			);

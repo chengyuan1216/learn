@@ -51,12 +51,15 @@ const createMultiCompiler = childOptions => {
  * @returns {Compiler} a compiler
  */
 const createCompiler = options => {
+	// 将用户配置与默认配置合并
 	options = new WebpackOptionsDefaulter().process(options);
+	// 创建compiler对象
 	const compiler = new Compiler(options.context);
 	compiler.options = options;
 	new NodeEnvironmentPlugin({
 		infrastructureLogging: options.infrastructureLogging
 	}).apply(compiler);
+	// 注册用户定义的插件
 	if (Array.isArray(options.plugins)) {
 		for (const plugin of options.plugins) {
 			if (typeof plugin === "function") {
@@ -78,6 +81,7 @@ const createCompiler = options => {
  * @returns {Compiler | MultiCompiler} the compiler object
  */
 const webpack = (options, callback) => {
+	// 参数验证
 	validateSchema(webpackOptionsSchema, options);
 	/** @type {MultiCompiler|Compiler} */
 	let compiler;
@@ -91,6 +95,7 @@ const webpack = (options, callback) => {
 		watchOptions = options.map(options => options.watchOptions || {});
 	} else {
 		/** @type {Compiler} */
+		// 创建compiler
 		compiler = createCompiler(options);
 		watch = options.watch;
 		watchOptions = options.watchOptions || {};

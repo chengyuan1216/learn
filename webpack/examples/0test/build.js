@@ -1,6 +1,5 @@
 const webpack = require('webpack')
 const path = require('path')
-debugger
 let compiler = webpack({
     entry: {
         app: path.resolve(__dirname, 'index.js')
@@ -11,4 +10,6 @@ let compiler = webpack({
     }
 })
 
-compiler.run()
+compiler.run(() => {
+    console.log('build success.')
+})
