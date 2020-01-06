@@ -1,0 +1,13 @@
+// Compatibility for browsers.
+
+// Placeholder text
+.placeholder(@color: @input-placeholder-color) {
+  // Firefox
+  &::placeholder {
+    color: @color;
+  }
+
+  &:placeholder-shown {
+    text-overflow: ellipsis;
+  }
+}
