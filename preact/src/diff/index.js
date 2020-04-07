@@ -44,18 +44,18 @@ VNode
  */
 export function diff(
 	parentDom, // 父节点
-	newVNode,  // 新的vnode
-	oldVNode,  // 老的vnode
-	context,   // 上下文
+	newVNode, // 新的vnode
+	oldVNode, // 老的vnode
+	context, // 上下文
 	isSvg,
 	excessDomChildren,
 	commitQueue,
-	oldDom,    // 老的DOM
+	oldDom, // 老的DOM
 	isHydrating
 ) {
 	let tmp,
 		newType = newVNode.type; // 节点的类型，也就是自己定义的组件函数或者组件类
-	debugger
+	debugger;
 	// When passing through createElement it assigns the object
 	// constructor as undefined. This to prevent JSON-injection.
 	if (newVNode.constructor !== undefined) return null;
@@ -63,6 +63,7 @@ export function diff(
 	if ((tmp = options._diff)) tmp(newVNode);
 
 	try {
+		// 自定义组件
 		outer: if (typeof newType === 'function') {
 			let c, isNew, oldProps, oldState, snapshot, clearProcessingException;
 			// 属性对象
@@ -84,9 +85,11 @@ export function diff(
 				clearProcessingException = c._processingException = c._pendingError;
 			} else {
 				// Instantiate the new component
+				// Class 组件
 				if ('prototype' in newType && newType.prototype.render) {
 					newVNode._component = c = new newType(newProps, cctx); // eslint-disable-line new-cap
 				} else {
+					// function 组件
 					newVNode._component = c = new Component(newProps, cctx);
 					c.constructor = newType;
 					c.render = doRender;
@@ -120,14 +123,17 @@ export function diff(
 			oldState = c.state;
 
 			// Invoke pre-render lifecycle methods
+			// 组件第一次渲染
 			if (isNew) {
 				if (
 					newType.getDerivedStateFromProps == null &&
 					c.componentWillMount != null
 				) {
+					// hooks componentWillMount
 					c.componentWillMount();
 				}
 
+				// hooks componentDidMount
 				if (c.componentDidMount != null) {
 					c._renderCallbacks.push(c.componentDidMount);
 				}
@@ -198,6 +204,7 @@ export function diff(
 				snapshot = c.getSnapshotBeforeUpdate(oldProps, oldState);
 			}
 
+			// 子元素
 			diffChildren(
 				parentDom,
 				newVNode,
@@ -222,6 +229,7 @@ export function diff(
 
 			c._force = null;
 		} else {
+			// DOM
 			newVNode._dom = diffElementNodes(
 				oldVNode._dom,
 				newVNode,

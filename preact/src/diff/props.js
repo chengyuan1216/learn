@@ -12,13 +12,13 @@ import options from '../options';
  */
 export function diffProps(dom, newProps, oldProps, isSvg, hydrate) {
 	let i;
-
+	// 将原有的属性清空
 	for (i in oldProps) {
 		if (!(i in newProps)) {
 			setProperty(dom, i, null, oldProps[i], isSvg);
 		}
 	}
-
+	// 设置新的属性
 	for (i in newProps) {
 		if (
 			(!hydrate || typeof newProps[i] == 'function') &&
@@ -60,11 +60,16 @@ function setProperty(dom, name, value, oldValue, isSvg) {
 			name = 'class';
 		}
 	} else if (name === 'class') {
+		/**
+		  DOM节点设置class时使用className属性， 所以要转换
+		 */
 		name = 'className';
 	}
 
 	if (name === 'key' || name === 'children') {
+		// key 和 children 不做处理
 	} else if (name === 'style') {
+		// 处理样式
 		const s = dom.style;
 
 		if (typeof value === 'string') {
@@ -94,6 +99,7 @@ function setProperty(dom, name, value, oldValue, isSvg) {
 	}
 	// Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
 	else if (name[0] === 'o' && name[1] === 'n') {
+		// 注册事件
 		let useCapture = name !== (name = name.replace(/Capture$/, ''));
 		let nameLower = name.toLowerCase();
 		name = (nameLower in dom ? nameLower : name).slice(2);

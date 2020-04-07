@@ -215,15 +215,13 @@ class Application extends Component {
 
 	render() {
 		return (
-			<div>
+			<div style="position:fixed; top: -1000px">
 				<Test message={this.state.message}></Test>
 				<button onClick={this.handleClick.bind(this)}>click</button>
 			</div>
 		);
 	}
 }
-
-console.log(Application.prototype.render.toString());
 
 /**
 function render() {
@@ -249,4 +247,4 @@ function render() {
 
  */
 
-render(<Application />, document.body);
+render(<div className="jj">hhhh</div>, document.body);

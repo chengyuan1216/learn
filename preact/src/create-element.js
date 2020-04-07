@@ -10,8 +10,10 @@ import { assign } from './util';
  * @returns {import('./internal').VNode}
  */
 export function createElement(type, props, children) {
+	debugger;
 	props = assign({}, props);
 
+	// 有多个子元素
 	if (arguments.length > 3) {
 		children = [children];
 		// https://github.com/preactjs/preact/issues/1916
@@ -19,12 +21,17 @@ export function createElement(type, props, children) {
 			children.push(arguments[i]);
 		}
 	}
+
+	// 将children保存在props上
 	if (children != null) {
 		props.children = children;
 	}
 
 	// "type" may be undefined during development. The check is needed so that
 	// we can display a nice error message with our debug helpers
+	/**
+	 *  组件的默认值
+	 */
 	if (type != null && type.defaultProps != null) {
 		for (let i in type.defaultProps) {
 			if (props[i] === undefined) props[i] = type.defaultProps[i];
@@ -72,6 +79,7 @@ export function createVNode(type, props, key, ref) {
 	return vnode;
 }
 
+// 返回一个空对象
 export function createRef() {
 	return {};
 }

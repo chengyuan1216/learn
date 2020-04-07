@@ -14,13 +14,14 @@ const IS_HYDRATE = EMPTY_OBJ;
  * existing DOM tree rooted at `replaceNode`
  */
 export function render(vnode, parentDom, replaceNode) {
-	debugger
+	debugger;
 	if (options._root) options._root(vnode, parentDom);
 
 	let isHydrating = replaceNode === IS_HYDRATE;
 	let oldVNode = isHydrating
 		? null
 		: (replaceNode && replaceNode._children) || parentDom._children;
+	// 使用Fragment包裹
 	vnode = createElement(Fragment, null, [vnode]);
 
 	let commitQueue = [];

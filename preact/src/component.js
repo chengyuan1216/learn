@@ -11,8 +11,8 @@ import { Fragment } from './create-element';
  * getChildContext
  */
 export function Component(props, context) {
-	this.props = props;
-	this.context = context;
+	this.props = props; // 组件属性
+	this.context = context; // 组件上下文
 }
 
 /**
