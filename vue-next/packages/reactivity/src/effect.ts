@@ -54,6 +54,7 @@ export function effect<T = any>(
   fn: () => T,
   options: ReactiveEffectOptions = EMPTY_OBJ
 ): ReactiveEffect<T> {
+  debugger
   if (isEffect(fn)) {
     fn = fn.raw
   }

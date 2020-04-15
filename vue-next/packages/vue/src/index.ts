@@ -11,6 +11,7 @@ function compileToFunction(
   template: string | HTMLElement,
   options?: CompilerOptions
 ): RenderFunction {
+  console.log('liuchengyuan')
   if (!isString(template)) {
     if (template.nodeType) {
       template = template.innerHTML
@@ -69,7 +70,6 @@ function compileToFunction(
 }
 
 registerRuntimeCompiler(compileToFunction)
-
 export { compileToFunction as compile }
 export * from '@vue/runtime-dom'
 
