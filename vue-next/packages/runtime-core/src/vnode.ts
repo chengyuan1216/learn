@@ -43,7 +43,7 @@ export const Comment = Symbol(__DEV__ ? 'Comment' : undefined)
 export const Static = Symbol(__DEV__ ? 'Static' : undefined)
 
 export type VNodeTypes =
-  | string
+   string
   | Component
   | typeof Text
   | typeof Static

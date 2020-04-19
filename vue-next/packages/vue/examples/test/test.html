@@ -1,0 +1,15 @@
+<script src="../../dist/vue.global.js"></script>
+<script>
+const { reactive, computed, effect } = Vue
+
+debugger
+var obj = reactive({
+  a: {
+    c: 1
+  },
+  b: 2
+})
+var test = null
+effect(() => (test = obj.a.c))
+
+</script>

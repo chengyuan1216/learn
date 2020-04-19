@@ -9,6 +9,8 @@ import {
   mutableCollectionHandlers,
   readonlyCollectionHandlers
 } from './collectionHandlers'
+console.log('mutableCollectionHandlers111', mutableCollectionHandlers)
+
 import { UnwrapRef, Ref, isRef } from './ref'
 import { makeMap } from '@vue/shared'
 
@@ -43,6 +45,7 @@ type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRef<T>
 
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
+  debugger
   // if trying to observe a readonly proxy, return the readonly version.
   if (readonlyToRaw.has(target)) {
     return target
@@ -116,6 +119,7 @@ function createReactiveObject(
   baseHandlers: ProxyHandler<any>,
   collectionHandlers: ProxyHandler<any>
 ) {
+  debugger
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -135,6 +139,7 @@ function createReactiveObject(
   if (!canObserve(target)) {
     return target
   }
+  debugger
   const handlers = collectionTypes.has(target.constructor)
     ? collectionHandlers
     : baseHandlers
