@@ -234,7 +234,7 @@ export default {
 
       Object.keys(allAliases).forEach(key => {
         const columnKey = aliases[key];
-        
+
         // 如果fixed变化了， 不仅要更新columnConfig 也要更新layout
         this.$watch(key, (newVal) => {
           this.columnConfig[columnKey] = newVal;
@@ -275,10 +275,10 @@ export default {
       headerAlign: this.realHeaderAlign, // 表头的对齐方式
       showOverflowTooltip: this.showOverflowTooltip || this.showTooltipWhenOverflow, // 是否超出展示tooltip
       // filter 相关属性
-      filterable: this.filters || this.filterMethod, //是否过滤
+      filterable: this.filters || this.filterMethod, // 是否过滤
       filteredValue: [], // 过滤的值
       filterPlacement: '', // ?
-      isColumnGroup: false, 
+      isColumnGroup: false,
       filterOpened: false,
       // sort 相关属性
       sortable: sortable, // 是否排序

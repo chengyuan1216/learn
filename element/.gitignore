@@ -10,7 +10,6 @@ yarn-error.log.*
 lerna-debug.log.*
 lib
 .idea
-.vscode
 examples/element-ui
 examples/pages/en-US
 examples/pages/zh-CN

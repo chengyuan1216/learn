@@ -80,5 +80,7 @@
   "cascader-panel": "./packages/cascader-panel/index.js",
   "avatar": "./packages/avatar/index.js",
   "drawer": "./packages/drawer/index.js",
-  "popconfirm": "./packages/popconfirm/index.js"
+  "popconfirm": "./packages/popconfirm/index.js",
+  "datatable": "./packages/datatable/index.js",
+  "datatable-column": "./packages/datatable-column/index.js"
 }

@@ -82,6 +82,8 @@ import CascaderPanel from '../packages/cascader-panel/index.js';
 import Avatar from '../packages/avatar/index.js';
 import Drawer from '../packages/drawer/index.js';
 import Popconfirm from '../packages/popconfirm/index.js';
+import Datatable from '../packages/datatable/index.js';
+import DatatableColumn from '../packages/datatable-column/index.js';
 import locale from 'element-ui/src/locale';
 import CollapseTransition from 'element-ui/src/transitions/collapse-transition';
 
@@ -163,6 +165,8 @@ const components = [
   Avatar,
   Drawer,
   Popconfirm,
+  Datatable,
+  DatatableColumn,
   CollapseTransition
 ];
 
@@ -284,5 +288,7 @@ export default {
   CascaderPanel,
   Avatar,
   Drawer,
-  Popconfirm
+  Popconfirm,
+  Datatable,
+  DatatableColumn
 };

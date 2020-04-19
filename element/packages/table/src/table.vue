@@ -644,7 +644,7 @@
     mounted() {
       // 绑定事件
       this.bindEvents();
-      // 
+      //
       this.store.updateColumns();
       this.doLayout();
 

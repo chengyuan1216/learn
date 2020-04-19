@@ -1,0 +1,8 @@
+{
+  "terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe",
+  "editor.fontSize": 20,
+  "javascript.updateImportsOnFileMove.enabled": "never",
+  "editor.codeActionsOnSave": null,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2
+}

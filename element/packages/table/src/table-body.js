@@ -39,7 +39,7 @@ export default {
         border="0">
         <colgroup>
           {
-            this.columns.map(column => <col name={ column.id } key={column.id} />)
+            this.columns.map(column => <col name={ column.id } key={column.id}/>)
           }
         </colgroup>
         <tbody>

@@ -1,49 +1,31 @@
 <template>
-  <el-table
-    :data="tableData"
-    border
-    style="width: 500px">
-    <el-table-column
-      fixed
-      prop="date"
-      label="日期"
-      width="150">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      label="姓名"
-      width="120">
-    </el-table-column>
-    <el-table-column
-      prop="province"
-      label="省份"
-      width="120">
-    </el-table-column>
-    <el-table-column
-      prop="city"
-      label="市区"
-      width="120">
-    </el-table-column>
-    <el-table-column
-      prop="address"
-      label="地址"
-      width="300">
-    </el-table-column>
-    <el-table-column
-      prop="zip"
-      label="邮编"
-      width="120">
-    </el-table-column>
-    <el-table-column
-      fixed="right"
-      label="操作"
-      width="100">
-      <template slot-scope="scope">
-        <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-        <el-button type="text" size="small">编辑</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div>
+    <el-button @click="getData(1)">改变数据</el-button>
+    <el-datatable 
+      ref="table"
+      :item-height="40" 
+      :view-height="400">
+      <!-- <div slot-scope="scope" class="item">
+        {{scope.item}}
+        <el-input style="width:50px"></el-input>
+        <el-input style="width:50px"></el-input>
+        <el-input style="width:50px"></el-input>
+      </div> -->
+      <el-datatable-column label="ID" width="200" prop="id"></el-datatable-column>
+      <el-datatable-column label="名称" width="100" prop="name"></el-datatable-column>
+      <el-datatable-column label="地址" width="200" prop="address">
+        <template>
+           jjjj
+        </template>
+      </el-datatable-column>
+      <el-datatable-column label="地址1" width="200" prop="address">
+        <template slot-scope="scope">
+          {{scope.row.id}}
+        </template>
+      </el-datatable-column>
+      <el-datatable-column label="地址2" prop="address"></el-datatable-column>
+    </el-datatable>
+  </div>
 </template>
 
 <script>
@@ -56,36 +38,38 @@
 
     data() {
       return {
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1517 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1519 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1516 弄',
-          zip: 200333
-        }]
+        arrData:[]
+      }
+    },
+    computed: {
+ 
+    },
+    mounted() {
+      this.getData(15)
+    },
+    methods: {
+      getData(num) {
+        console.time('111')
+       let arr = []
+        for (let i = 0; i < num; i++) {
+          arr.push({
+            id: i,
+            name: 'name-' + i,
+            address: '地址'+ i
+          })
+        }
+        console.timeEnd('111')
+        // 当数据量达到很大的时候,使用setData传递数据
+        // 注意也不要保存在父组件的data中， 因为这会将对象所有的属性转变成get、set
+        this.$refs.table.setData(arr)
       }
     }
   }
 </script>
+<style lang="scss">
+.item {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+</style>

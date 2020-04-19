@@ -96,7 +96,7 @@
         type: String,
         default: ''
       },
-      
+  
       // 距离顶部的距离
       top: {
         type: String,
@@ -121,13 +121,13 @@
 
     watch: {
       visible(val) {
-        debugger
+  
         if (val) {
           // 一个标识
           this.closed = false;
           this.$emit('open');
 
-          // TODO: 
+          // TODO:
           this.$el.addEventListener('scroll', this.updatePopper);
 
           // 让滚动条的位置回到顶部
