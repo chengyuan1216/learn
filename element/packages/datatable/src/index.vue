@@ -1,17 +1,23 @@
 <template>
-  <div class="el-datatabe" style="width:100%">
+  <div class="el-datatabe" :class="{
+  }">
     <div class="hidden-columns" ref="hiddenColumns"><slot></slot></div>
-    <table-header></table-header>
-    <table-body ref="body" v-bind="$props"></table-body>
+    <table-header :store="store"></table-header>
+    <scrollbar :store="store" :maxHeight="viewHeight">
+      <table-body ref="body" v-bind="$props"></table-body>
+      <!-- <div style="height: 10px; width: 150px;"></div> -->
+    </scrollbar>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import createStore from '../helpers/store'
+import createStore from './store'
 import tableHeader from './table-header'
 import tableBody from './table-body'
+import scrollbar from './scrollbar'
 
+let uid = 1
 export default {
   name: 'ElDatatable',
   props: {
@@ -31,7 +37,8 @@ export default {
   },
   components: {
     tableHeader,
-    tableBody
+    tableBody,
+    scrollbar
   },
   provide() {
     return {
@@ -41,7 +48,6 @@ export default {
   data() {
     return { };
   },
-  computed: {},
   watch: {
     data: {
       handler() {
@@ -51,9 +57,16 @@ export default {
     }
   },
   beforeCreate() {
-    window.t = this
-    this.store = createStore({})
+    this.tableId = 'el-datatable_' + uid++
+    this.store = createStore(this)
     this.eventBus = new Vue()
+  },
+  mounted() {
+    this.store.calcColumnWidth()
+  },
+  beforeDestroy() {
+    this.store = null
+    this.eventBus = null
   },
   methods: {
     setData(data) {
@@ -67,33 +80,17 @@ export default {
 <style lang="scss" scoped>
 .el-datatabe {
   position: relative;
-  padding-right: 10px;
   border: 1px solid #ebeef5;
-  // .el-datatable-body {
-  //   overflow: hidden;
-  //   position: relative;
-  //   border: 1px solid #ebeef5;
-  //   .table {
-  //     width: 100%;
-  //   }
-  // }
-
+  box-sizing: border-box;
+  overflow: hidden;
   .hidden-columns {
     display: none;
   }
-
-  // .scroll-bar-wrap {
-  //   position: absolute;
-  //   top: -1px;
-  //   right: 0;
-  //   width: 10px;
-  //   box-shadow: 0 0 1px 1px #e0e0e0;
-  //   background: #fff;
-  //   .scroll-bar {
-  //     width: 17px;
-  //     background: gray;
-  //     border-radius: 2px;
-  //   }
-  // }
+}
+.el-datatabe--scrollx {
+  padding-bottom: 10px;
+}
+.el-datatabe--scrolly {
+  padding-right: 10px;
 }
 </style>

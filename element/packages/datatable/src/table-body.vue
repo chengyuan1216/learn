@@ -1,5 +1,5 @@
 <template>
-  <div class="el-datatable-body" :style="{height: height + 'px'}"  @mousewheel.prevent="handleMousewheel">
+  <div class="el-datatable-body" :style="{width: store.tableWidth + 'px',height: height + 'px'}"  @mousewheel.prevent="handleMousewheel">
     <table cellspacing="0" cellpadding="0" border="0" :style="{transform: transform}">
       <colgroup>
         <col v-for="(col, index) in store.columns" 
@@ -13,16 +13,13 @@
         </table-row>
       </tbody>
     </table>
-    <!-- <div class="scroll-bar-wrap" ref="scrollBar" :style="{height: viewHeight + 'px'}" @scroll="handleScroll">
-      <div class="scroll-bar" :style="{width: '100%',height: scrollbarHeight + 'px', transform: scrollbarTransform}"></div>
-    </div> -->
   </div>
 </template>
 
 <script>
+import { getTableParent } from './helpers/utils'
 import tableRow from './table-row'
 export default {
-  inject: ['tableParent'],
   props: {
     itemHeight: { // 定义表格的逻辑行的高度， 跟每一次滚动的距离有关
       type: Number,
@@ -49,10 +46,6 @@ export default {
     };
   },
   computed: {
-    store() {
-      return this.tableParent.store
-    },
-
     size() {
       let size = this.viewHeight / this.itemHeight;
       return parseInt(size) === size ? size : parseInt(size);
@@ -68,25 +61,26 @@ export default {
     },
 
     // 滚动条的高度
-    scrollbarHeight() {
-      return Math.max(this.viewHeight / (this.dataAmount * this.itemHeight) * this.viewHeight, 10)
-    },
+    // scrollbarHeight() {
+    //   return Math.max(this.viewHeight / (this.dataAmount * this.itemHeight) * this.viewHeight, 10)
+    // },
 
-    scrollbarTransform() {
-      let dist = this.scrollTop / (this.dataAmount * this.itemHeight) * this.viewHeight
-      if (dist + 10 > this.viewHeight) {
-        dist =  this.viewHeight - 10
-      }
-      return `translate3d(0, ${dist}px, 0)`
-    }
+    // scrollbarTransform() {
+    //   let dist = this.scrollTop / (this.dataAmount * this.itemHeight) * this.viewHeight
+    //   if (dist + 10 > this.viewHeight) {
+    //     dist =  this.viewHeight - 10
+    //   }
+    //   return `translate3d(0, ${dist}px, 0)`
+    // }
   },
   created() {
+    this.store = this.getTableParent().store
   },
   methods: {
+    getTableParent,
     setData(data) {
       this.$nextTick(() => {
         this.dataAmount = data.length
-        console.log(this.dataAmount)
         this.update(true, 0);
       })
     },
@@ -114,41 +108,34 @@ export default {
       } else {
         this.scrollTop = Math.max(this.scrollTop - delta, 0);
       }
+      this.store.setScrollTop(this.scrollTop)
       this.update(true);
-    },
-    handleScroll(ev) {
-      // console.log(ev.target.scrollTop)
-      // this.scrollTop = ev.target.scrollTop
-      // this.update()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .el-datatable-body {
-    overflow: hidden;
-    position: relative;
-    // .table {
-    //   width: 100%;
-    // }
-  }
+.el-datatable-body {
+  overflow: hidden;
+  position: relative;
+}
 
-  table {
-    table-layout:fixed;
-    word-break:break-all;
-  }
+table {
+  table-layout:fixed;
+  word-break:break-all;
+}
 
-  .scroll-bar-wrap {
-    position: absolute;
-    top: -1px;
-    right: 0;
-    width: 10px;
-    box-shadow: 0 0 1px 1px #e0e0e0;
-    background: #fff;
-    .scroll-bar {
-      background: gray;
-      border-radius: 2px;
-    }
+.scroll-bar-wrap {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  width: 10px;
+  box-shadow: 0 0 1px 1px #e0e0e0;
+  background: #fff;
+  .scroll-bar {
+    background: gray;
+    border-radius: 2px;
   }
+}
 </style>

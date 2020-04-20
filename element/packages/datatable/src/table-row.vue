@@ -21,7 +21,7 @@ export default {
             key={index} 
             colspan="1" 
             rowspan="1" 
-            // width={col.width}
+            width={col.realWidth}
             class={'el-datatable_column_' + index}>
             {this.renderCell(col, index)}
           </td>
@@ -52,13 +52,16 @@ export default {
 tr {
   td {
     height: 40px;
-    border-top: 1px solid #ebeef5;
+    border-bottom: 1px solid #ebeef5;
     border-right: 1px solid #ebeef5;
     box-sizing: border-box;
     padding: 0;
     .cell {
       padding: 0 10px;
     }
+  }
+  td:nth-last-child(1) {
+    border-right: 0;
   }
 }
 </style>

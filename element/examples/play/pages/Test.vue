@@ -2,7 +2,7 @@
   <datatable
     ref="table"
     :data="tableData"
-    style="width: 100%"
+    style="width: 500px"
     max-height="500">
     <el-table-column
       prop="id"

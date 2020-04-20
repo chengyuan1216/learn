@@ -1,4 +1,5 @@
 <script>
+import {getTableParent} from './helpers/utils';
 export default {
   name: 'ElDatatableColumn',
 
@@ -8,20 +9,22 @@ export default {
     width: [String, Number]
   },
 
-  inject: ['tableParent'],
-
   created() {
-    if (!this.tableParent) {
+    let tableParent = this.getTableParent()
+    if (!tableParent) {
       throw new Error('未找到el-datatable父组件');
       return;
     }
-    this.tableParent.store.addColumn(this);
+    tableParent.store.addColumn(this);
   },
 
   render(h) {
-    // console.log(this.tableParent, this.$props );
     // slots 也要渲染，需要计算合并表头
     return h('div', this.$slots.default);
+  },
+
+  methods: {
+    getTableParent
   }
 };
 </script>
