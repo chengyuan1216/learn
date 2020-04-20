@@ -1,11 +1,9 @@
 <template>
-  <div class="el-datatabe" :class="{
-  }">
+  <div class="el-datatabe" :class="{}">
     <div class="hidden-columns" ref="hiddenColumns"><slot></slot></div>
     <table-header :store="store"></table-header>
     <scrollbar :store="store" :maxHeight="viewHeight">
       <table-body ref="body" v-bind="$props"></table-body>
-      <!-- <div style="height: 10px; width: 150px;"></div> -->
     </scrollbar>
   </div>
 </template>

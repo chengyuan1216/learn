@@ -18,6 +18,7 @@
 
 <script>
 import { getTableParent } from './helpers/utils'
+import EventType from './helpers/eventType'
 import tableRow from './table-row'
 export default {
   props: {
@@ -58,39 +59,27 @@ export default {
     // 最大的滚动距离
     scrollTopMax() {
       return (this.dataAmount - this.size) * this.itemHeight;
-    },
-
-    // 滚动条的高度
-    // scrollbarHeight() {
-    //   return Math.max(this.viewHeight / (this.dataAmount * this.itemHeight) * this.viewHeight, 10)
-    // },
-
-    // scrollbarTransform() {
-    //   let dist = this.scrollTop / (this.dataAmount * this.itemHeight) * this.viewHeight
-    //   if (dist + 10 > this.viewHeight) {
-    //     dist =  this.viewHeight - 10
-    //   }
-    //   return `translate3d(0, ${dist}px, 0)`
-    // }
+    }
   },
   created() {
     this.store = this.getTableParent().store
+    this.eventBus = this.getTableParent().eventBus
+    this.eventBus.$on(EventType.UPDATE_TABLE_VIEW, this.updateByEvent)
+  },
+  beforeDestroy() {
+    this.eventBus.$off(EventType.UPDATE_TABLE_VIEW, this.updateByEvent)
   },
   methods: {
     getTableParent,
     setData(data) {
       this.$nextTick(() => {
         this.dataAmount = data.length
-        this.update(true, 0);
+        this.update(0);
       })
     },
-    update(isWheel, scrollTop) {
-      scrollTop = scrollTop == undefined ? this.scrollTop : scrollTop
+    update(scrollTop) {
+      scrollTop = scrollTop === undefined ? this.scrollTop : scrollTop
       requestAnimationFrame(() => {
-        // 更新滚动条的位置
-        if (this.$refs.scrollBar && isWheel) {
-          this.$refs.scrollBar.scrollTop = scrollTop;
-        }
         this.filter(scrollTop);
       })
     },
@@ -106,10 +95,14 @@ export default {
         // 向下
         this.scrollTop = Math.min(this.scrollTop + delta, this.scrollTopMax);
       } else {
-        this.scrollTop = Math.max(this.scrollTop - delta, 0);
+        this.scrollTop = Math.max(this.scrollTop - delta, 0)
       }
       this.store.setScrollTop(this.scrollTop)
-      this.update(true);
+      this.update()
+    },
+    updateByEvent(scrollTop) {
+      this.scrollTop = scrollTop
+      this.update()
     }
   }
 }

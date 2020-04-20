@@ -8,7 +8,10 @@ export default {
   },
   methods: {
     setScrollTop(scrollTop) {
-      this.scrollTop = scrollTop
+      this.$nextTick(()=> {
+        // console.log(scrollTop)
+        this.scrollTop = scrollTop
+      })
     }
   }
 }

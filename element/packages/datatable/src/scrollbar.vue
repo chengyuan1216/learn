@@ -9,10 +9,10 @@
     <div ref="view" class="el-datatable-scrollbar__view" >
       <slot></slot>
     </div>
-    <div class="scroll-bar is-horizontal"  v-if="scrollx"   :style="{}" >
+    <div class="scroll-bar is-horizontal" ref="horizontal" v-if="scrollx">
       <div class="scrollbar__thumb" :style="{height: '100%', width:'30px', transform: 'translate3d(40px, 0, 0)'}"></div>
     </div>
-    <div class="scroll-bar is-vertical" v-if="scrolly">
+    <div class="scroll-bar is-vertical" ref="vertical" v-if="scrolly">
       <div class="scrollbar__thumb" @mousedown="handleMouseDown($event, BAR_TYPE.V)" :style="{width: '100%', height: verticalThumb + 'px', transform: verticalThumbTranslate}"></div>
     </div>
   </div>
@@ -20,9 +20,11 @@
 
 <script>
 import { addResizeListener, removeResizeListener } from './helpers/resize-event'
+import EventType  from './helpers/eventType'
+
 const BAR_TYPE = {
-  V: 1,
-  H: 2
+  V: 'vertical',
+  H: 'horizontal'
 }
 export default {
   props: {
@@ -62,13 +64,13 @@ export default {
         dist =  viewHeight - this.store.scrollbarWidth
       }
       return `translate3d(0, ${dist}px, 0)`
+    },
+
+    // 最大的滚动距离
+    scrollTopMax() {
+      let {itemHeight, viewHeight} = this.store.context
+      return this.store.dataSize * itemHeight - viewHeight;
     }
-  },
-  mounted() {
-    addResizeListener(this.$refs.view, this.handleResize)
-  },
-  beforeDestroy() {
-    removeResizeListener(this.$refs.view, this.handleResize)
   },
   mounted() {
     this.bindEvents()
@@ -78,33 +80,46 @@ export default {
   },
   methods: {
     handleResize(entry) {
-      console.log(entry)
       let { contentRect } = entry
       this.scrolly = this.maxHeight !== undefined? contentRect.height >= this.maxHeight: false
       this.scrollx = this.maxWidth !== undefined? contentRect.width >= this.maxWidth: false
     },
 
     bindEvents() {
+      addResizeListener(this.$refs.view, this.handleResize)
       document.addEventListener('mouseup', this.handleMouseup)
     },
 
     removeEvents() {
+      removeResizeListener(this.$refs.view, this.handleResize)
       document.removeEventListener('mouseup', this.handleMouseup)
     },
 
     handleMouseDown(ev, type) {
-      console.log('ev', ev)
+      ev.stopImmediatePropagation()
       this.type = type
+      document.onselectstart = () => false;
       document.addEventListener('mousemove', this.handleMousemove)
     },
 
     handleMousemove(ev) {
-      console.log(ev.clientX, ev.clientY)
+      if (!this.type) return 
+      this.$nextTick(() => {
+        if (this.type == BAR_TYPE.V) {
+          let {itemHeight, viewHeight, eventBus} = this.store.context
+          let offset = Math.abs(this.$refs[this.type].getBoundingClientRect().top - ev.clientY)
+          let scrollTop = offset / viewHeight * this.store.dataSize * itemHeight
+          scrollTop = Math.min(scrollTop, this.scrollTopMax)
+          this.store.setScrollTop(scrollTop) // 更新滚动条
+          eventBus.$emit(EventType.UPDATE_TABLE_VIEW, scrollTop) // 更新表格
+        }
+      })
     },
 
     handleMouseup(ev) {
       this.type = null
       document.removeEventListener('mousemove', this.handleMousemove)
+      document.onselectstart = null
     }
   }
 }
