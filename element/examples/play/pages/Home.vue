@@ -16,7 +16,7 @@
       </el-datatable-column>
       <el-datatable-column label="地址1" width="200" prop="address">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.address"></el-input>
+          <!-- <el-input v-model="scope.row.address"></el-input> -->
         </template>
       </el-datatable-column>
       <el-datatable-column label="地址2" prop="address"></el-datatable-column>

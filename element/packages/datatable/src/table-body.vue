@@ -64,44 +64,48 @@ export default {
   created() {
     this.store = this.getTableParent().store
     this.eventBus = this.getTableParent().eventBus
-    this.eventBus.$on(EventType.UPDATE_TABLE_VIEW, this.updateByEvent)
+    this.eventBus.$on(EventType.VIEW_SCROLL, this.updateByEvent)
   },
   beforeDestroy() {
-    this.eventBus.$off(EventType.UPDATE_TABLE_VIEW, this.updateByEvent)
+    this.eventBus.$off(EventType.VIEW_SCROLL, this.updateByEvent)
   },
   methods: {
     getTableParent,
     setData(data) {
       this.$nextTick(() => {
         this.dataAmount = data.length
-        this.update(0);
+        this.update(0)
       })
     },
     update(scrollTop) {
       scrollTop = scrollTop === undefined ? this.scrollTop : scrollTop
       requestAnimationFrame(() => {
-        this.filter(scrollTop);
+        this.filter(scrollTop)
+        this.eventBus.$emit(EventType.VIEW_UPDATE, {
+          verticalPercent: scrollTop / (this.dataAmount - this.size) / this.itemHeight
+        })
       })
     },
     filter(scrollTop) {
-      let translate = scrollTop / this.itemHeight;
-      this.startIndex = parseInt(translate);
-      this.transform = `translate3d(0, ${-scrollTop + this.startIndex * this.itemHeight}px, 0)`;
-      this.dataList = this.store.getTableData(this.startIndex, this.startIndex + this.size + 2);
+      let translate = scrollTop / this.itemHeight
+      this.startIndex = parseInt(translate)
+      this.transform = `translate3d(0, ${-scrollTop + this.startIndex * this.itemHeight}px, 0)`
+      this.dataList = this.store.getTableData(this.startIndex, this.startIndex + this.size + 2)
     },
     handleMousewheel(ev) {
-      let delta = this.delta === undefined? this.itemHeight * 1.25: this.delta;
+      let delta = this.delta === undefined? this.itemHeight * 1.25: this.delta
       if (ev.wheelDelta < 0) {
         // 向下
-        this.scrollTop = Math.min(this.scrollTop + delta, this.scrollTopMax);
+        this.scrollTop = Math.min(this.scrollTop + delta, this.scrollTopMax)
       } else {
         this.scrollTop = Math.max(this.scrollTop - delta, 0)
       }
-      this.store.setScrollTop(this.scrollTop)
+      // this.store.setScrollTop(this.scrollTop)
       this.update()
     },
-    updateByEvent(scrollTop) {
-      this.scrollTop = scrollTop
+    updateByEvent(event) {
+      // console.log(event)
+      this.scrollTop = event.verticalPercent * (this.dataAmount - this.size) * this.itemHeight
       this.update()
     }
   }

@@ -13,19 +13,24 @@
       <div class="scrollbar__thumb" :style="{height: '100%', width:'30px', transform: 'translate3d(40px, 0, 0)'}"></div>
     </div>
     <div class="scroll-bar is-vertical" ref="vertical" v-if="scrolly">
-      <div class="scrollbar__thumb" @mousedown="handleMouseDown($event, BAR_TYPE.V)" :style="{width: '100%', height: verticalThumb + 'px', transform: verticalThumbTranslate}"></div>
+      <div class="scrollbar__thumb"
+        ref="vertical_thumb" 
+        @mousedown="handleMouseDown($event, BAR_TYPE.V)" 
+        :style="{width: '100%', height: verticalThumb + 'px', transform: `translate3d(0, ${scrollTop}px, 0)`}">
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { addResizeListener, removeResizeListener } from './helpers/resize-event'
+import { debounce, throttle } from 'throttle-debounce';
 import EventType  from './helpers/eventType'
-
 const BAR_TYPE = {
   V: 'vertical',
   H: 'horizontal'
 }
+const MIN_THUMB_SIZE = 20
 export default {
   props: {
     store: {
@@ -43,7 +48,9 @@ export default {
       scrollx: false,
       scrolly: false,
       BAR_TYPE,
-      type:null
+      type:null,
+      scrollTop: 0,
+      scrollLeft: 0
     }
   },
   computed: {
@@ -54,23 +61,10 @@ export default {
     // 滚动条的高度
     verticalThumb() {
       let {itemHeight, viewHeight} = this.store.context
-      return Math.max(viewHeight / (this.store.dataSize * itemHeight) * viewHeight, 10)
-    },
-
-    verticalThumbTranslate() {
-      let {itemHeight, viewHeight} = this.store.context
-      let dist = this.store.scrollTop / (this.store.dataSize * itemHeight) * viewHeight
-      if (dist + this.store.scrollbarWidth > viewHeight) {
-        dist =  viewHeight - this.store.scrollbarWidth
-      }
-      return `translate3d(0, ${dist}px, 0)`
-    },
-
-    // 最大的滚动距离
-    scrollTopMax() {
-      let {itemHeight, viewHeight} = this.store.context
-      return this.store.dataSize * itemHeight - viewHeight;
+      return Math.max(viewHeight / (this.store.dataSize * itemHeight) * viewHeight, MIN_THUMB_SIZE)
     }
+  },
+  created() {
   },
   mounted() {
     this.bindEvents()
@@ -79,26 +73,40 @@ export default {
     this.removeEvents()
   },
   methods: {
+    bindEvents() {
+      let {eventBus} = this.store.context
+      addResizeListener(this.$refs.view, this.handleResize)
+      document.addEventListener('mouseup', this.handleMouseup)
+      eventBus.$on(EventType.VIEW_UPDATE, this.handleViewUpdate)
+    },
+
+    removeEvents() {
+      let {eventBus} = this.store.context
+      removeResizeListener(this.$refs.view, this.handleResize)
+      document.removeEventListener('mouseup', this.handleMouseup)
+      eventBus.$off(EventType.VIEW_UPDATE, this.handleViewUpdate)
+    },
+
+    syncScrollTopByOffset(offset, cursorPosition) {
+      let top = Math.max(offset - cursorPosition, 0)
+      this.scrollTop = Math.min(top, this.maxHeight - this.verticalThumb)
+    },
+
+    handleViewUpdate(event) {
+      this.syncScrollTopByOffset(event.verticalPercent * (this.maxHeight-this.verticalThumb), 0)
+    },
+
     handleResize(entry) {
       let { contentRect } = entry
       this.scrolly = this.maxHeight !== undefined? contentRect.height >= this.maxHeight: false
       this.scrollx = this.maxWidth !== undefined? contentRect.width >= this.maxWidth: false
     },
 
-    bindEvents() {
-      addResizeListener(this.$refs.view, this.handleResize)
-      document.addEventListener('mouseup', this.handleMouseup)
-    },
-
-    removeEvents() {
-      removeResizeListener(this.$refs.view, this.handleResize)
-      document.removeEventListener('mouseup', this.handleMouseup)
-    },
-
     handleMouseDown(ev, type) {
       ev.stopImmediatePropagation()
       this.type = type
-      document.onselectstart = () => false;
+      this.cursorPosition = Math.abs(this.$refs[type+'_thumb'].getBoundingClientRect().top - ev.clientY)
+      document.onselectstart = () => false
       document.addEventListener('mousemove', this.handleMousemove)
     },
 
@@ -107,11 +115,15 @@ export default {
       this.$nextTick(() => {
         if (this.type == BAR_TYPE.V) {
           let {itemHeight, viewHeight, eventBus} = this.store.context
-          let offset = Math.abs(this.$refs[this.type].getBoundingClientRect().top - ev.clientY)
-          let scrollTop = offset / viewHeight * this.store.dataSize * itemHeight
-          scrollTop = Math.min(scrollTop, this.scrollTopMax)
-          this.store.setScrollTop(scrollTop) // 更新滚动条
-          eventBus.$emit(EventType.UPDATE_TABLE_VIEW, scrollTop) // 更新表格
+          let offset = ev.clientY - this.$refs[this.type].getBoundingClientRect().top
+          this.syncScrollTopByOffset(offset, this.cursorPosition)
+          // 通过事件去更新数据
+          eventBus.$emit(EventType.VIEW_SCROLL, {
+            scrollTop: this.scrollTop,
+            scrollHeight: this.maxHeight,
+            verticalThumb: this.verticalThumb,
+            verticalPercent: this.scrollTop / (this.maxHeight - this.verticalThumb)
+          }) 
         }
       })
     },
