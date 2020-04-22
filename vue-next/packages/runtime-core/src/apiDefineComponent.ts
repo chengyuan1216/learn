@@ -121,6 +121,7 @@ export function defineComponent<
   >
 }
 
+// 定义一个组件
 // implementation, close to no-op
 export function defineComponent(options: unknown) {
   return isFunction(options) ? { setup: options } : options
