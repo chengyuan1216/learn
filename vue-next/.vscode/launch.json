@@ -20,6 +20,21 @@
       },
       "console": "integratedTerminal",
       "sourceMaps": true
+    },
+    {
+      "name": "build",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/build.js",
+      "stopOnEntry": true,
+      "args": ["vue"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "env": {
+      },
+      "console": "integratedTerminal",
+      "sourceMaps": true
     }
   ]
 }

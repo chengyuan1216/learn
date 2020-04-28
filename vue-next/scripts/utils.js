@@ -1,6 +1,7 @@
 const fs = require('fs')
 const chalk = require('chalk')
 
+// 遍历packages找到所有的包
 const targets = (exports.targets = fs.readdirSync('packages').filter(f => {
   if (!fs.statSync(`packages/${f}`).isDirectory()) {
     return false
@@ -12,6 +13,7 @@ const targets = (exports.targets = fs.readdirSync('packages').filter(f => {
   return true
 }))
 
+// 找到指定的包
 exports.fuzzyMatchTarget = (partialTargets, includeAllMatching) => {
   const matched = []
   partialTargets.forEach(partialTarget => {
