@@ -208,7 +208,7 @@ export function createComponentInstance(
     withProxy: null,
     setupContext: null,
     effects: null,
-    provides: parent ? parent.provides : Object.create(appContext.provides),
+    provides: parent ? parent.provides : Object.create(appContext.provides), // 继承appContext
     accessCache: null!,
     renderCache: [],
 
@@ -258,6 +258,7 @@ export function createComponentInstance(
   } else {
     instance.proxyTarget = { _: instance }
   }
+  // 根节点对应的组件
   instance.root = parent ? parent.root : instance
   instance.emit = emit.bind(null, instance)
   return instance

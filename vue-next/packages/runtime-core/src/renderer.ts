@@ -972,6 +972,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 根据vnode创建组件对象
   const mountComponent: MountComponentFn = (
     initialVNode,
     container,
@@ -981,6 +982,7 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
+    // 创建节点对应的组件
     const instance: ComponentInternalInstance = (initialVNode.component = createComponentInstance(
       initialVNode,
       parentComponent,
@@ -997,6 +999,7 @@ function baseCreateRenderer(
     }
 
     // inject renderer internals for keepAlive
+    // 是否是keepAlive
     if (isKeepAlive(initialVNode)) {
       const sink = instance.sink as KeepAliveSink
       sink.renderer = internals
@@ -1007,6 +1010,8 @@ function baseCreateRenderer(
     if (__DEV__) {
       startMeasure(instance, `init`)
     }
+    // 执行setup
+    // 在setup内部可以准备好用于渲染的数据，类似2.0的data
     setupComponent(instance)
     if (__DEV__) {
       endMeasure(instance, `init`)
@@ -1030,6 +1035,10 @@ function baseCreateRenderer(
       return
     }
 
+    // 在准备好数据之后主动执行一次renderEffect
+    // 执行后将会收集依赖
+    // 在依赖变化后会重新执行
+    // 类似2.0的renderWatch
     setupRenderEffect(
       instance,
       initialVNode,
@@ -1095,6 +1104,7 @@ function baseCreateRenderer(
     optimized
   ) => {
     // create reactive effect for rendering
+    // 更新组件的方法
     instance.update = effect(function componentEffect() {
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
@@ -1930,6 +1940,7 @@ function baseCreateRenderer(
   }
 
   const render: RootRenderFunction = (vnode, container) => {
+    debugger
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)

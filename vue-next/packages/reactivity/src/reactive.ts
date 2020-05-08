@@ -9,7 +9,6 @@ import {
   mutableCollectionHandlers,
   readonlyCollectionHandlers
 } from './collectionHandlers'
-console.log('mutableCollectionHandlers111', mutableCollectionHandlers)
 
 import { UnwrapRef, Ref, isRef } from './ref'
 import { makeMap } from '@vue/shared'
@@ -30,6 +29,7 @@ const isObservableType = /*#__PURE__*/ makeMap(
   'Object,Array,Map,Set,WeakMap,WeakSet'
 )
 
+// 是否能observe
 const canObserve = (value: any): boolean => {
   return (
     !value._isVue &&
@@ -45,7 +45,6 @@ type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRef<T>
 
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
-  debugger
   // if trying to observe a readonly proxy, return the readonly version.
   if (readonlyToRaw.has(target)) {
     return target
@@ -54,6 +53,7 @@ export function reactive(target: object) {
   if (readonlyValues.has(target)) {
     return readonly(target)
   }
+  // 如果传入的是一个ref对象
   if (isRef(target)) {
     return target
   }
@@ -114,12 +114,12 @@ export function shallowReactive<T extends object>(target: T): T {
 
 function createReactiveObject(
   target: unknown,
-  toProxy: WeakMap<any, any>,
-  toRaw: WeakMap<any, any>,
-  baseHandlers: ProxyHandler<any>,
-  collectionHandlers: ProxyHandler<any>
+  toProxy: WeakMap<any, any>, // rawToReactive
+  toRaw: WeakMap<any, any>, // reactiveToRaw
+  baseHandlers: ProxyHandler<any>, // mutableHandlers
+  collectionHandlers: ProxyHandler<any> // mutableCollectionHandlers
 ) {
-  debugger
+  // 如果observe
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -127,36 +127,44 @@ function createReactiveObject(
     return target
   }
   // target already has corresponding Proxy
+  // 如果当前对象已经observed
   let observed = toProxy.get(target)
   if (observed !== void 0) {
     return observed
   }
   // target is already a Proxy
+  // 如果传入的是一个obseved对象
   if (toRaw.has(target)) {
     return target
   }
   // only a whitelist of value types can be observed.
+  // 如果不能被observe
   if (!canObserve(target)) {
     return target
   }
-  debugger
+  
+  // Set、Map和普通数据处理handler不一样， 分开处理
   const handlers = collectionTypes.has(target.constructor)
     ? collectionHandlers
     : baseHandlers
+  // 返回一个Proxy用于代理target对象
   observed = new Proxy(target, handlers)
   toProxy.set(target, observed)
   toRaw.set(observed, target)
   return observed
 }
 
+// 判断对象是否被observe
 export function isReactive(value: unknown): boolean {
   return reactiveToRaw.has(value) || readonlyToRaw.has(value)
 }
 
+// 是否是只读
 export function isReadonly(value: unknown): boolean {
   return readonlyToRaw.has(value)
 }
 
+// 通过observed对象找到target对象
 export function toRaw<T>(observed: T): T {
   return reactiveToRaw.get(observed) || readonlyToRaw.get(observed) || observed
 }

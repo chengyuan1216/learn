@@ -44,6 +44,7 @@ function createRef(value: unknown, shallow = false) {
   if (isRef(value)) {
     return value
   }
+  // 如果value是一个对象是否要observe这个对象
   if (!shallow) {
     value = convert(value)
   }
@@ -66,10 +67,12 @@ function createRef(value: unknown, shallow = false) {
   return r
 }
 
+// 
 export function unref<T>(ref: T): T extends Ref<infer V> ? V : T {
   return isRef(ref) ? (ref.value as any) : ref
 }
 
+// 将一个observe对象所有的属性值都转换成ref对象
 export function toRefs<T extends object>(
   object: T
 ): { [K in keyof T]: Ref<T[K]> } {
@@ -83,6 +86,7 @@ export function toRefs<T extends object>(
   return ret
 }
 
+// ref对象代理到原来的target对象上
 function toProxyRef<T extends object, K extends keyof T>(
   object: T,
   key: K

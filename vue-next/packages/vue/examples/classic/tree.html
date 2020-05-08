@@ -61,11 +61,11 @@ const TreeItem = {
 }
 </script>
 
-<p>(You can double click on an item to turn it into a folder.)</p>
 
 <!-- the app root element -->
 <ul id="demo">
-  <tree-item class="item" :model="treeData"></tree-item>
+  <p>(You can double click on an item to turn it into a folder.)</p>
+  <tree-item class="item" ref="tree" :model="treeData"></tree-item>
 </ul>
 
 <script>
@@ -98,7 +98,7 @@ const treeData = {
   ]
 }
 
-Vue.createApp({
+window.app = Vue.createApp({
   components: {
     TreeItem
   },

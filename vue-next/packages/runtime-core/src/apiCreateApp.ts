@@ -115,11 +115,16 @@ export function createAppAPI<HostElement>(
       rootProps = null
     }
 
+    // 创建app上下文
     const context = createAppContext()
     const installedPlugins = new Set()
 
+    // 标识是否挂载
     let isMounted = false
 
+    // 与2.0不同
+    // 2.0 use mixin等都是构造函数的静态方法是在整个页面中共享的
+    // 3.0 use mixin等都是在createApp中定义的，每个创建出来的app都是独立的， 具有更好的隔离性
     const app: App = {
       _component: rootComponent as Component,
       _props: rootProps,
@@ -138,6 +143,7 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // 插件
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
@@ -202,7 +208,10 @@ export function createAppAPI<HostElement>(
       },
 
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
+        debugger
         if (!isMounted) {
+          // 创建virtual dom 
+          // 此时不一定有render方法， 可能是template
           const vnode = createVNode(rootComponent as Component, rootProps)
           // store app context on the root VNode.
           // this will be set on the root instance on initial mount.
@@ -218,6 +227,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 渲染创建好的virtual dom
             render(vnode, rootContainer)
           }
           isMounted = true

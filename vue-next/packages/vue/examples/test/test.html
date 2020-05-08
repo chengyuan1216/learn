@@ -1,15 +1,66 @@
 <script src="../../dist/vue.global.js"></script>
+<style>
+  body {
+    font-family: Menlo, Consolas, monospace;
+    color: #444;
+  }
+  .item {
+    cursor: pointer;
+  }
+  .bold {
+    font-weight: bold;
+  }
+  ul {
+    padding-left: 1em;
+    line-height: 1.5em;
+    list-style-type: dot;
+  }
+  [v-cloak] {
+    display: none;
+  }
+</style>
+
+<!-- the app root element -->
+<p>hh</p>
+<div id="demo" v-cloak>
+    <p v-if="a">{{a}}</p>
+    <p v-show="b">{{b}}</p>
+    <p>{{c}}</p>
+</div>
+
 <script>
-const { reactive, computed, effect } = Vue
-
-debugger
-var obj = reactive({
-  a: {
-    c: 1
-  },
-  b: 2
+let data = Vue.reactive({
+  c: 'c',
+  d: 'd'
 })
-var test = null
-effect(() => (test = obj.a.c))
 
+let r = Vue.shallowRef({
+  d: 1
+})
+Vue.effect(() => {
+  console.log(r.value.d)
+})
+
+r.value.d = 3
+
+// Vue.effect(() => {
+//   console.log(data.c)
+// })
+// data.c = 5
+//   debugger
+// let reactive = Vue.reactive
+// Vue.createApp({
+//   components: {},
+//   setup() {
+//     let data = reactive({
+//       c: 'c',
+//       d: 'd'
+//     })
+//     return data
+//   },
+//   data: () => ({
+//     a: 'a',
+//     b: 'b'
+//   })
+// }).mount('#demo')
 </script>

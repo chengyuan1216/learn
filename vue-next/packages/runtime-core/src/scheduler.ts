@@ -9,12 +9,14 @@ let isFlushing = false
 let isFlushPending = false
 
 const RECURSION_LIMIT = 100
+// 统计某个方法执行的次数
 type CountMap = Map<Function, number>
 
 export function nextTick(fn?: () => void): Promise<void> {
   return fn ? p.then(fn) : p
 }
 
+// 将任务加入队列
 export function queueJob(job: () => void) {
   if (!queue.includes(job)) {
     queue.push(job)
@@ -22,6 +24,7 @@ export function queueJob(job: () => void) {
   }
 }
 
+// 取消某个任务
 export function invalidateJob(job: () => void) {
   const i = queue.indexOf(job)
   if (i > -1) {
@@ -29,6 +32,7 @@ export function invalidateJob(job: () => void) {
   }
 }
 
+// 
 export function queuePostFlushCb(cb: Function | Function[]) {
   if (!isArray(cb)) {
     postFlushCbs.push(cb)

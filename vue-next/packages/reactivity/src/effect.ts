@@ -39,8 +39,9 @@ export interface DebuggerEventExtraInfo {
   oldValue?: any
   oldTarget?: Map<any, any> | Set<any>
 }
-
+// effect调用栈， 一般是在父子组件渲染时出现
 const effectStack: ReactiveEffect[] = []
+// 当前正在执行的effect
 export let activeEffect: ReactiveEffect | undefined
 
 export const ITERATE_KEY = Symbol(__DEV__ ? 'iterate' : '')
@@ -50,6 +51,7 @@ export function isEffect(fn: any): fn is ReactiveEffect {
   return fn && fn._isEffect === true
 }
 
+// 创建effect，effect也是一个函数
 export function effect<T = any>(
   fn: () => T,
   options: ReactiveEffectOptions = EMPTY_OBJ
@@ -65,6 +67,7 @@ export function effect<T = any>(
   return effect
 }
 
+// 销毁effect
 export function stop(effect: ReactiveEffect) {
   if (effect.active) {
     cleanup(effect)
@@ -84,8 +87,10 @@ function createReactiveEffect<T = any>(
       return options.scheduler ? undefined : fn(...args)
     }
     if (!effectStack.includes(effect)) {
+      // 清除依赖，在执行effect时重新收集
       cleanup(effect)
       try {
+        // 在执行effect的过程中收集使用的observe数据
         enableTracking()
         effectStack.push(effect)
         activeEffect = effect
@@ -105,6 +110,7 @@ function createReactiveEffect<T = any>(
   return effect
 }
 
+// 清除依赖
 function cleanup(effect: ReactiveEffect) {
   const { deps } = effect
   if (deps.length) {

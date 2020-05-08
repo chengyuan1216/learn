@@ -38,7 +38,7 @@ function ensureHydrationRenderer() {
 }
 
 // use explicit type casts here to avoid import() calls in rolled-up d.ts
-export const render = ((...args) => {
+export const render = ((...args) => { 
   ensureRenderer().render(...args)
 }) as RootRenderFunction<Element>
 
@@ -47,23 +47,28 @@ export const hydrate = ((...args) => {
 }) as RootHydrateFunction
 
 export const createApp = ((...args) => {
-  debugger
+  // 创建app对象
   const app = ensureRenderer().createApp(...args)
 
+  // 注入isNativeTag方法，在开发环境可以检查原生标签
   if (__DEV__) {
     injectNativeTagCheck(app)
   }
 
   const { mount } = app
   app.mount = (containerOrSelector: Element | string): any => {
+    // 如果containerOrSelector是字符串， 则通过querySelector查找元素
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
+    // 组件配置对象, 传入createApp方法的第一个参数
     const component = app._component
+    // 如果没有配置对象render方法或template属性则将container的innerHTML作为模板
     if (!isFunction(component) && !component.render && !component.template) {
       component.template = container.innerHTML
     }
     // clear content before mounting
     container.innerHTML = ''
+    // 
     const proxy = mount(container)
     container.removeAttribute('v-cloak')
     return proxy
