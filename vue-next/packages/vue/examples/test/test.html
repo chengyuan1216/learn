@@ -34,14 +34,38 @@ let data = Vue.reactive({
   d: 'd'
 })
 
-let r = Vue.shallowRef({
-  d: 1
-})
-Vue.effect(() => {
-  console.log(r.value.d)
+let c1 = Vue.computed(() => {
+  console.log('getter c1')
+  return data.c
 })
 
-r.value.d = 3
+let c2 = Vue.computed(() => {
+  console.log('getter c2')
+  return c1.value
+})
+
+// Vue.watch(c1, () => {
+//   console.log('c1变化啦')
+// })
+
+console.log(c2.value)
+data.c = 2
+// console.log(c1.value)
+
+
+// let data = Vue.reactive({
+//   c: 'c',
+//   d: 'd'
+// })
+
+// let r = Vue.shallowRef({
+//   d: 1
+// })
+// Vue.effect(() => {
+//   console.log(r.value.d)
+// })
+
+// r.value.d = 3
 
 // Vue.effect(() => {
 //   console.log(data.c)

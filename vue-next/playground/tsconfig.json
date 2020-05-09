@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es5",                         
+    "module": "es2015",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["DOM", "ES2015"],
+    "baseUrl": ".",
+    "allowJs": true,
+    "paths": {
+      "vue": ["../packages/vue/dist/vue.esm.js"]
+    },
+    // "typeRoots" : ["."]
+    "types": []
+  },
+  "include": [
+    "src",
+    "main.ts",
+    "vue.d.ts",
+    "../packages/global.d.ts",
+    "../packages/runtime-dom/jsx.d.ts",
+    "../packages/reactivity/dist/reactivity.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
