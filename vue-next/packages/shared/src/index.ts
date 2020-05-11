@@ -27,6 +27,7 @@ export const NO = () => false
 const onRE = /^on[^a-z]/
 export const isOn = (key: string) => onRE.test(key)
 
+// 对象继承
 export const extend = <T extends object, U extends object>(
   a: T,
   b: U
@@ -37,6 +38,7 @@ export const extend = <T extends object, U extends object>(
   return a as any
 }
 
+// 移除数组某一项
 export const remove = <T>(arr: T[], el: T) => {
   const i = arr.indexOf(el)
   if (i > -1) {
@@ -44,6 +46,7 @@ export const remove = <T>(arr: T[], el: T) => {
   }
 }
 
+// 是否是自己的属性
 const hasOwnProperty = Object.prototype.hasOwnProperty
 export const hasOwn = (
   val: object,
@@ -58,6 +61,7 @@ export const isSymbol = (val: unknown): val is symbol => typeof val === 'symbol'
 export const isObject = (val: unknown): val is Record<any, any> =>
   val !== null && typeof val === 'object'
 
+// 判断是否是promise
 export const isPromise = <T = any>(val: unknown): val is Promise<T> => {
   return isObject(val) && isFunction(val.then) && isFunction(val.catch)
 }
@@ -80,6 +84,7 @@ export const isReservedProp = /*#__PURE__*/ makeMap(
     'onVnodeBeforeUnmount,onVnodeUnmounted'
 )
 
+// 缓存对某个字符串的处理结果
 const cacheStringFunction = <T extends (str: string) => string>(fn: T): T => {
   const cache: Record<string, string> = Object.create(null)
   return ((str: string) => {
@@ -95,6 +100,7 @@ export const camelize = cacheStringFunction(
   }
 )
 
+// 将单词边界转换成-
 const hyphenateRE = /\B([A-Z])/g
 export const hyphenate = cacheStringFunction(
   (str: string): string => {
@@ -102,6 +108,7 @@ export const hyphenate = cacheStringFunction(
   }
 )
 
+// 首字母大写
 export const capitalize = cacheStringFunction(
   (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1)
@@ -109,10 +116,12 @@ export const capitalize = cacheStringFunction(
 )
 
 // compare whether a value has changed, accounting for NaN.
+// 判断值是否变化，新值和旧值不能同时为NaN
 export const hasChanged = (value: any, oldValue: any): boolean =>
   value !== oldValue && (value === value || oldValue === oldValue)
 
 // for converting {{ interpolation }} values to displayed strings.
+// 将一个数据展示为字符串
 export const toDisplayString = (val: unknown): string => {
   return val == null
     ? ''

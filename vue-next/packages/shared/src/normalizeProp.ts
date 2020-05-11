@@ -19,7 +19,8 @@ export function normalizeStyle(
     return value
   }
 }
-
+ 
+// 将style Object 转换成style string
 export function stringifyStyle(
   styles: Record<string, string | number> | undefined
 ): string {
@@ -41,6 +42,7 @@ export function stringifyStyle(
   return ret
 }
 
+// 处理css class
 export function normalizeClass(value: unknown): string {
   let res = ''
   if (isString(value)) {
