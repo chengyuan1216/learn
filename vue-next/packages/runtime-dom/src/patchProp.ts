@@ -8,11 +8,12 @@ import { RendererOptions } from '@vue/runtime-core'
 
 const nativeOnRE = /^on[a-z]/
 
+// 节点更新
 export const patchProp: RendererOptions<Node, Element>['patchProp'] = (
-  el,
-  key,
-  prevValue,
-  nextValue,
+  el, // dom节点
+  key, // 属性
+  prevValue,  // 旧值
+  nextValue, // 新值
   isSVG = false,
   prevChildren,
   parentComponent,

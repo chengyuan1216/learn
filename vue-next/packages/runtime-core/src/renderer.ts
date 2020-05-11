@@ -1940,7 +1940,6 @@ function baseCreateRenderer(
   }
 
   const render: RootRenderFunction = (vnode, container) => {
-    debugger
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)

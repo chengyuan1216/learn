@@ -65,7 +65,6 @@ export function computed<T>(
     // expose effect so computed can be stopped
     effect: runner,
     get value() {
-      debugger
       // 在执行runner的时候会收集computed的依赖，并且返回computed的值
       // 此时computed是作为一个effect
       if (dirty) {
@@ -78,7 +77,6 @@ export function computed<T>(
       return value
     },
     set value(newValue: T) {
-      debugger
       setter(newValue)
     }
   } as any

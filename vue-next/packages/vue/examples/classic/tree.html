@@ -5,7 +5,7 @@
   <li>
     <div
       :class="{bold: isFolder}"
-      @click="toggle"
+      @click="toggle(e)"
       @dblclick="changeType">
       {{model.name}}
       <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
@@ -40,7 +40,8 @@ const TreeItem = {
     }
   },
   methods: {
-    toggle() {
+    toggle(ev) {
+      console.log(ev)
       if (this.isFolder) {
         this.open = !this.open
       }

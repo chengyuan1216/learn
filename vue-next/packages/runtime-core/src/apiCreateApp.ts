@@ -208,7 +208,7 @@ export function createAppAPI<HostElement>(
       },
 
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
-        debugger
+        
         if (!isMounted) {
           // 创建virtual dom 
           // 此时不一定有render方法， 可能是template

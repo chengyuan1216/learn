@@ -1,1 +1,4 @@
-1、css grid
+1、css grid的用法
+2、document.append() 与 document.appendChild()的区别
+3、innerHTML、innerText、nodeValue、textContent、value
+4、DOM
