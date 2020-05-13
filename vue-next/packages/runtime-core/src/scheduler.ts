@@ -18,6 +18,7 @@ export function nextTick(fn?: () => void): Promise<void> {
 
 // 将任务加入队列
 export function queueJob(job: () => void) {
+  debugger
   if (!queue.includes(job)) {
     queue.push(job)
     queueFlush()

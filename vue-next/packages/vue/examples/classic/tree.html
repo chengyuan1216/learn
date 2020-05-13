@@ -5,7 +5,7 @@
   <li>
     <div
       :class="{bold: isFolder}"
-      @click="toggle(e)"
+      @click="toggle($event)"
       @dblclick="changeType">
       {{model.name}}
       <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
@@ -62,10 +62,15 @@ const TreeItem = {
 }
 </script>
 
+<select multiple size="1">
+  <option selected>1</option>
+  <option>2</option>
+  <option>3</option>
+</select>
 
 <!-- the app root element -->
 <ul id="demo">
-  <p>(You can double click on an item to turn it into a folder.)</p>
+  <!-- <p>(You can double click on an item to turn it into a folder.)</p> -->
   <tree-item class="item" ref="tree" :model="treeData"></tree-item>
 </ul>
 
@@ -98,7 +103,8 @@ const treeData = {
     }
   ]
 }
-
+debugger
+// performance.mark('start')
 window.app = Vue.createApp({
   components: {
     TreeItem
@@ -106,7 +112,35 @@ window.app = Vue.createApp({
   data: () => ({
     treeData
   })
-}).mount('#demo')
+})
+app.mount('#demo')
+// performance.mark('end')
+// performance.measure('test123', 'start', 'end')
+// performance.clearMarks('start')
+// performance.clearMarks('end')
+
+// function render(_ctx, _cache) {
+//   with (_ctx) {
+//     const { 
+//       createVNode: _createVNode, 
+//       resolveComponent: _resolveComponent, 
+//       Fragment: _Fragment, 
+//       openBlock: _openBlock, 
+//       createBlock: _createBlock 
+//     } = _Vue
+
+//     const _component_tree_item = _resolveComponent("tree-item")
+
+//     return (_openBlock(), _createBlock(_Fragment, null, [
+//       _hoisted_1,
+//       _createVNode(_component_tree_item, {
+//         class: "item",
+//         ref: "tree",
+//         model: treeData
+//       }, null, 8 /* PROPS */, ["model"])
+//     ], 64 /* STABLE_FRAGMENT */))
+//   }
+// }
 </script>
 
 <style>

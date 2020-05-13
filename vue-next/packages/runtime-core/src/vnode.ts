@@ -42,6 +42,7 @@ export const Text = Symbol(__DEV__ ? 'Text' : undefined)
 export const Comment = Symbol(__DEV__ ? 'Comment' : undefined)
 export const Static = Symbol(__DEV__ ? 'Static' : undefined)
 
+// virtual Node types
 export type VNodeTypes =
    string
   | Component
@@ -341,6 +342,7 @@ function _createVNode(
   return vnode
 }
 
+// 复制vnode
 export function cloneVNode<T, U>(
   vnode: VNode<T, U>,
   extraProps?: Data & VNodeProps

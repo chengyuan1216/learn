@@ -15,13 +15,14 @@ const modifierGuards: Record<
   shift: e => !(e as KeyedEvent).shiftKey,
   alt: e => !(e as KeyedEvent).altKey,
   meta: e => !(e as KeyedEvent).metaKey,
-  left: e => 'button' in e && (e as MouseEvent).button !== 0,
-  middle: e => 'button' in e && (e as MouseEvent).button !== 1,
-  right: e => 'button' in e && (e as MouseEvent).button !== 2,
+  left: e => 'button' in e && (e as MouseEvent).button !== 0, // 按下鼠标左键
+  middle: e => 'button' in e && (e as MouseEvent).button !== 1, // 按下鼠标中键
+  right: e => 'button' in e && (e as MouseEvent).button !== 2, // 按下鼠标右键
   exact: (e, modifiers) =>
     systemModifiers.some(m => (e as any)[`${m}Key`] && !modifiers.includes(m))
 }
 
+// 使用修饰符
 export const withModifiers = (fn: Function, modifiers: string[]) => {
   return (event: Event) => {
     for (let i = 0; i < modifiers.length; i++) {

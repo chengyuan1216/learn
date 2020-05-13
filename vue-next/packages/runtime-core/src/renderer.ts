@@ -1939,7 +1939,9 @@ function baseCreateRenderer(
     }
   }
 
+  // 根节点render
   const render: RootRenderFunction = (vnode, container) => {
+    // 如果传入的vnode为空
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
