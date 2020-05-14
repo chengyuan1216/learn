@@ -171,6 +171,9 @@ export function setBlockTracking(value: number) {
 // Create a block root vnode. Takes the same exact arguments as `createVNode`.
 // A block root keeps track of dynamic nodes within the block in the
 // `dynamicChildren` array.
+// createBlock的参数与createVnode的参数一致
+// createBlock内部调用了createVnode
+// 通过createBlock创建vnode可以收集动态变化的vnode
 export function createBlock(
   type: VNodeTypes | ClassComponent,
   props?: { [key: string]: any } | null,
@@ -179,13 +182,19 @@ export function createBlock(
   dynamicProps?: string[]
 ): VNode {
   // avoid a block with patchFlag tracking itself
+  // 通过createBlock创建的vnode不会被push到当前的currentBlock
   shouldTrack--
   const vnode = createVNode(type, props, children, patchFlag, dynamicProps)
   shouldTrack++
   // save current block children on the block vnode
+  // 将当前的currentBlock作为dynamicChildren
   vnode.dynamicChildren = currentBlock || EMPTY_ARR
   // close block
+  // 当前的block出栈
   blockStack.pop()
+
+  // 如果block栈还有block的话， 就将当前createBlock创建的vnode加入到最后一个block中
+  // 实现block嵌套
   currentBlock = blockStack[blockStack.length - 1] || null
   // a block is always going to be patched, so track it as a child of its
   // parent block
@@ -209,6 +218,7 @@ export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
     // HMR only: if the component has been hot-updated, force a reload.
     return false
   }
+  // 判断n1 和 n2是否是同类型的节点
   return n1.type === n2.type && n1.key === n2.key
 }
 
@@ -248,6 +258,7 @@ function _createVNode(
   patchFlag: number = 0,
   dynamicProps: string[] | null = null
 ): VNode {
+  // 如果type不存在则创建一个comment节点
   if (!type) {
     if (__DEV__) {
       warn(`Invalid vnode type when creating vnode: ${type}.`)
@@ -256,11 +267,13 @@ function _createVNode(
   }
 
   // class component normalization.
+  // class 声明的组件
   if (isFunction(type) && '__vccOpts' in type) {
     type = type.__vccOpts
   }
 
   // class & style normalization.
+  // 处理style和class
   if (props) {
     // for reactive or proxy objects, we need to clone it to enable mutation.
     if (isReactive(props) || InternalObjectSymbol in props) {
@@ -300,7 +313,7 @@ function _createVNode(
     key: props && props.key !== undefined ? props.key : null,
     ref:
       props && props.ref !== undefined
-        ? [currentRenderingInstance!, props.ref]
+        ? [currentRenderingInstance!, props.ref] // 如果有ref属性
         : null,
     scopeId: currentScopeId,
     children: null,

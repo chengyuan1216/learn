@@ -53,6 +53,7 @@ export function renderComponentRoot(
   } = instance
 
   let result
+  // 正在渲染的组件实例
   currentRenderingInstance = instance
   if (__DEV__) {
     accessedAttrs = false
@@ -63,6 +64,7 @@ export function renderComponentRoot(
       // withProxy is a proxy with a different `has` trap only for
       // runtime-compiled render functions using `with` block.
       const proxyToUse = withProxy || proxy
+      // 执行render方法得到subTree
       result = normalizeVNode(
         instance.render!.call(proxyToUse, proxyToUse!, renderCache)
       )
@@ -121,6 +123,8 @@ export function renderComponentRoot(
     if (parentScopeId) {
       root = cloneVNode(root, { [parentScopeId]: '' })
     }
+
+    // 在组件上使用指令时， 将会把指令作用到root节点上
     // inherit directives
     if (vnode.dirs) {
       if (__DEV__ && !isElementRoot(root)) {
@@ -159,22 +163,27 @@ export function renderComponentRoot(
 const getChildRoot = (
   vnode: VNode
 ): [VNode, ((root: VNode) => void) | undefined] => {
+  // 如果节点不是Fragment节点
   if (vnode.type !== Fragment) {
     return [vnode, undefined]
   }
   const rawChildren = vnode.children as VNodeArrayChildren
   const dynamicChildren = vnode.dynamicChildren as VNodeArrayChildren
+  // 过滤掉注释节点
   const children = rawChildren.filter(child => {
     return !(isVNode(child) && child.type === Comment)
   })
+  // 去除掉注节点后如果children的长度不唯一
   if (children.length !== 1) {
     return [vnode, undefined]
   }
+  // 当Fragment的非Comment节点只有一个时
   const childRoot = children[0]
   const index = rawChildren.indexOf(childRoot)
   const dynamicIndex = dynamicChildren
     ? dynamicChildren.indexOf(childRoot)
     : null
+  // 返回一个setRoot方法用于更新这个节点
   const setRoot = (updatedRoot: VNode) => {
     rawChildren[index] = updatedRoot
     if (dynamicIndex !== null) dynamicChildren[dynamicIndex] = updatedRoot

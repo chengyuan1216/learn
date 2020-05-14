@@ -215,6 +215,7 @@ export function createAppAPI<HostElement>(
           const vnode = createVNode(rootComponent as Component, rootProps)
           // store app context on the root VNode.
           // this will be set on the root instance on initial mount.
+          // 在初始化的时候会将appContext挂载在root 
           vnode.appContext = context
 
           // HMR root reload

@@ -63,6 +63,7 @@ export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
   // Reason: innerHTML.
   // Static content here can only come from compiled templates.
   // As long as the user only uses trusted templates, this is safe.
+  // 插入 html字符串
   insertStaticContent(content, parent, anchor, isSVG) {
     const temp = isSVG
       ? tempSVGContainer ||

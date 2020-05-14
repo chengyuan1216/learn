@@ -2,7 +2,8 @@
 
 <!-- item template -->
 <script type="text/x-template" id="item-template">
-  <li>
+  <li @vnodeBeforeMount="handleVnodeBeforeMount">
+    <slot></slot>
     <div
       :class="{bold: isFolder}"
       @click="toggle($event)"
@@ -39,12 +40,22 @@ const TreeItem = {
         this.model.children.length
     }
   },
+  beforeMount() {
+ 
+  },
+  mounted() {
+ 
+  },
   methods: {
+    handleVnodeBeforeMount(a, b, c, d) {
+      console.log('handleVnodeBeforeMount', a, b, c, d)
+    },
     toggle(ev) {
-      console.log(ev)
+      console.log(this)
       if (this.isFolder) {
         this.open = !this.open
       }
+      this.$emit('toggle')
     },
     changeType() {
       if (!this.isFolder) {
@@ -62,16 +73,14 @@ const TreeItem = {
 }
 </script>
 
-<select multiple size="1">
-  <option selected>1</option>
-  <option>2</option>
-  <option>3</option>
-</select>
-
 <!-- the app root element -->
 <ul id="demo">
   <!-- <p>(You can double click on an item to turn it into a folder.)</p> -->
-  <tree-item class="item" ref="tree" :model="treeData"></tree-item>
+  <!-- <tree-item class="item" a="1" b="3" @toggle="handleToggle" ref="tree" :model="treeData">
+    <div>999</div>
+  </tree-item> -->
+  <div>{{a}}</div> 
+  <div v-html="htmlStr"></div>
 </ul>
 
 <script>
@@ -80,27 +89,27 @@ const treeData = {
   children: [
     { name: 'hello' },
     { name: 'wat' },
-    {
-      name: 'child folder',
-      children: [
-        {
-          name: 'child folder',
-          children: [
-            { name: 'hello' },
-            { name: 'wat' }
-          ]
-        },
-        { name: 'hello' },
-        { name: 'wat' },
-        {
-          name: 'child folder',
-          children: [
-            { name: 'hello' },
-            { name: 'wat' }
-          ]
-        }
-      ]
-    }
+    // {
+    //   name: 'child folder',
+    //   children: [
+    //     {
+    //       name: 'child folder',
+    //       children: [
+    //         { name: 'hello' },
+    //         { name: 'wat' }
+    //       ]
+    //     },
+    //     { name: 'hello' },
+    //     { name: 'wat' },
+    //     {
+    //       name: 'child folder',
+    //       children: [
+    //         { name: 'hello' },
+    //         { name: 'wat' }
+    //       ]
+    //     }
+    //   ]
+    // }
   ]
 }
 debugger
@@ -109,11 +118,32 @@ window.app = Vue.createApp({
   components: {
     TreeItem
   },
+  setup() {
+    let a = Vue.ref('hello world')
+    let htmlStr = Vue.ref(`<div>hhhhh</div>`)
+    return {
+      a,
+      htmlStr
+    }
+  },
+  beforeMount() {
+    Vue.onMounted((vm) => {
+      console.log('vm1', vm)
+    })
+  },
+  mounted() {
+    console.log('jjjj',this)
+  },
   data: () => ({
     treeData
-  })
-})
-app.mount('#demo')
+  }),
+  methods: {
+    handleToggle() {
+      console.log('toggle ====> ')
+    }
+  }
+}).mount('#demo')
+
 // performance.mark('end')
 // performance.measure('test123', 'start', 'end')
 // performance.clearMarks('start')

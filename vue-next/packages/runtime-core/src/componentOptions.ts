@@ -239,6 +239,7 @@ function createDuplicateChecker() {
   }
 }
 
+// 处理options选项
 export function applyOptions(
   instance: ComponentInternalInstance,
   options: ComponentOptions,
@@ -281,20 +282,24 @@ export function applyOptions(
       ? (instance.renderContext = reactive({}))
       : instance.renderContext
 
+  // 全局混合
   const globalMixins = instance.appContext.mixins
   // call it only during dev
 
   // applyOptions is called non-as-mixin once per instance
+  // 只有第一次才会执行
   if (!asMixin) {
     callSyncHook('beforeCreate', options, ctx, globalMixins)
     // global mixins are applied first
     applyMixins(instance, globalMixins)
   }
   // extending a base component...
+  // 处理通过extends得到的options
   if (extendsOptions) {
     applyOptions(instance, extendsOptions, true)
   }
   // local mixins
+  // 处理通过mixins得到的options
   if (mixins) {
     applyMixins(instance, mixins)
   }
@@ -308,6 +313,7 @@ export function applyOptions(
   }
 
   // state options
+  // 3.0定义data时必须是个function, 就算跟组件也是
   if (dataOptions) {
     if (__DEV__ && !isFunction(dataOptions)) {
       warn(
@@ -315,6 +321,7 @@ export function applyOptions(
           `Plain object usage is no longer supported.`
       )
     }
+    // 执行data方法
     const data = dataOptions.call(ctx, ctx)
     if (!isObject(data)) {
       __DEV__ && warn(`data() should return an object.`)
@@ -322,22 +329,28 @@ export function applyOptions(
       if (__DEV__) {
         for (const key in data) {
           checkDuplicateProperties!(OptionTypes.DATA, key)
+          // 将data的属性挂在proxyTarget上
           if (!(key in proxyTarget)) proxyTarget[key] = data[key]
         }
       }
+      // 将data转成reactive
       instance.data = reactive(data)
     } else {
       // existing data: this is a mixin or extends.
+      // 如果已经存在instance.data, 有可能是从mixins或extends获得到的
       extend(instance.data, data)
     }
   }
 
+  // 处理computed
   if (computedOptions) {
     for (const key in computedOptions) {
       const opt = (computedOptions as ComputedOptions)[key]
       if (isFunction(opt)) {
+        // 如果是一个function, 那就将这个function作为get方法
         renderContext[key] = computed(opt.bind(ctx, ctx))
       } else {
+        // 如果是一个对象
         const { get, set } = opt
         if (isFunction(get)) {
           renderContext[key] = computed({
@@ -368,6 +381,7 @@ export function applyOptions(
     }
   }
 
+  // 处理methods
   if (methods) {
     for (const key in methods) {
       const methodHandler = (methods as MethodOptions)[key]
@@ -388,21 +402,25 @@ export function applyOptions(
     }
   }
 
+  // 处理watch
   if (watchOptions) {
     for (const key in watchOptions) {
       createWatcher(watchOptions[key], renderContext, ctx, key)
     }
   }
 
+  // 处理provide
   if (provideOptions) {
     const provides = isFunction(provideOptions)
       ? provideOptions.call(ctx)
       : provideOptions
     for (const key in provides) {
+      // 将所有的数据都通过provide注入到子组件中去
       provide(key, provides[key])
     }
   }
 
+  // 处理inject
   if (injectOptions) {
     if (isArray(injectOptions)) {
       for (let i = 0; i < injectOptions.length; i++) {
@@ -430,17 +448,23 @@ export function applyOptions(
   }
 
   // asset options
+  // 处理components, 直接通过extend继承
   if (components) {
     extend(instance.components, components)
   }
+
+  // 处理directives
   if (directives) {
     extend(instance.directives, directives)
   }
 
   // lifecycle options
+  // 在处理完所有的options后， 执行create生命周期
   if (!asMixin) {
     callSyncHook('created', options, ctx, globalMixins)
   }
+
+  // 处理生命周期
   if (beforeMount) {
     onBeforeMount(beforeMount.bind(ctx))
   }
@@ -476,27 +500,33 @@ export function applyOptions(
   }
 }
 
+// 同步调用生命周期
 function callSyncHook(
   name: 'beforeCreate' | 'created',
   options: ComponentOptions,
   ctx: ComponentPublicInstance,
   globalMixins: ComponentOptions[]
 ) {
+  // 先执行全局mixins的生命
   callHookFromMixins(name, globalMixins, ctx)
+  // 执行extends的生命周期
   const baseHook = options.extends && options.extends[name]
   if (baseHook) {
     baseHook.call(ctx)
   }
+  // 执行mixins的生命周期
   const mixins = options.mixins
   if (mixins) {
     callHookFromMixins(name, mixins, ctx)
   }
+  // 执行自己的生命周期
   const selfHook = options[name]
   if (selfHook) {
     selfHook.call(ctx)
   }
 }
 
+// 当生命周期有多个时， 此时是一个数组
 function callHookFromMixins(
   name: 'beforeCreate' | 'created',
   mixins: ComponentOptions[],
@@ -526,6 +556,7 @@ function createWatcher(
   key: string
 ) {
   const getter = () => (ctx as Data)[key]
+  // 如果值是一个字符串， 则会尝试从renderContext中找到相同名字的方法
   if (isString(raw)) {
     const handler = renderContext[raw]
     if (isFunction(handler)) {
@@ -534,8 +565,10 @@ function createWatcher(
       warn(`Invalid watch handler specified by key "${raw}"`, handler)
     }
   } else if (isFunction(raw)) {
+    // 如果是一个function
     watch(getter, raw.bind(ctx))
   } else if (isObject(raw)) {
+    // 如果是一个Object
     if (isArray(raw)) {
       raw.forEach(r => createWatcher(r, renderContext, ctx, key))
     } else {

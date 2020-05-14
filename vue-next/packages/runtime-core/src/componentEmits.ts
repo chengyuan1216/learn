@@ -42,6 +42,7 @@ export function emit(
   event: string,
   ...args: any[]
 ) {
+  // 子组件触发事件时，调用vnode.props上的方法
   const props = instance.vnode.props || EMPTY_OBJ
 
   if (__DEV__) {

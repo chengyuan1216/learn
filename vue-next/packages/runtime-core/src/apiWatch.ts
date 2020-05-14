@@ -71,6 +71,7 @@ export type StopHandle = () => void
 const invoke = (fn: Function) => fn()
 
 // Simple effect.
+// watch effect
 export function watchEffect(
   effect: WatchEffect,
   options?: BaseWatchOptions
@@ -148,14 +149,16 @@ function doWatch(
             ? s.value
             : callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER)
       )
-  } else if (isRef(source)) {
+  } else if (isRef(source)) { // 如果被监听的是一个ref
     getter = () => source.value
   } else if (cb) {
     // getter with cb
+    // source在 $watch的时候会转换成function
     getter = () =>
       callWithErrorHandling(source, instance, ErrorCodes.WATCH_GETTER)
   } else {
     // no cb -> simple effect
+    // 如果是一个 effect
     getter = () => {
       if (instance && instance.isUnmounted) {
         return
@@ -172,6 +175,7 @@ function doWatch(
     }
   }
 
+  // 如果是深度监听，则通过递归的方式收集所有依赖
   if (cb && deep) {
     const baseGetter = getter
     getter = () => traverse(baseGetter())
@@ -239,6 +243,7 @@ function doWatch(
     scheduler = job => queuePostRenderEffect(job, instance && instance.suspense)
   }
 
+  // watch其实也是一个computed属性， 与computed不同的是scheduler不一样
   const runner = effect(getter, {
     lazy: true,
     // so it runs before component update effects in pre flush mode
@@ -248,11 +253,12 @@ function doWatch(
     scheduler: applyCb ? () => scheduler(applyCb) : scheduler
   })
 
+  // 记录当前组件实例的effects
   recordInstanceBoundEffect(runner)
 
   // initial run
   if (applyCb) {
-    if (immediate) {
+    if (immediate) { // 立即执行
       applyCb()
     } else {
       oldValue = runner()
@@ -270,6 +276,7 @@ function doWatch(
 }
 
 // this.$watch
+// 对外的接口
 export function instanceWatch(
   this: ComponentInternalInstance,
   source: string | Function,
@@ -277,12 +284,14 @@ export function instanceWatch(
   options?: WatchOptions
 ): StopHandle {
   const ctx = this.proxy as Data
+  // 如果source是一个字符串则会转换成一个function
   const getter = isString(source) ? () => ctx[source] : source.bind(ctx)
   const stop = watch(getter, cb.bind(ctx), options)
   onBeforeUnmount(stop, this)
   return stop
 }
 
+// 通过遍历整个对象来完成依赖的收集，达到深度监听
 function traverse(value: unknown, seen: Set<unknown> = new Set()) {
   if (!isObject(value) || seen.has(value)) {
     return

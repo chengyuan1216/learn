@@ -69,6 +69,7 @@ export const createHook = <T extends Function = () => any>(
   // post-create lifecycle registrations are noops during SSR
   !isInSSRComponentSetup && injectHook(lifecycle, hook, target)
 
+// 所有注册的生命周期函数都会挂载组件对象上
 export const onBeforeMount = createHook(LifecycleHooks.BEFORE_MOUNT)
 export const onMounted = createHook(LifecycleHooks.MOUNTED)
 export const onBeforeUpdate = createHook(LifecycleHooks.BEFORE_UPDATE)

@@ -100,6 +100,9 @@ export const initSlots = (
   children: VNodeNormalizedChildren
 ) => {
   if (instance.vnode.shapeFlag & ShapeFlags.SLOTS_CHILDREN) {
+    // 子组件在父组件中编译的到的children将作为slots 
+    // 在渲染子组件时可通过slots来获取父组件中定义的slots
+    // 非手写的render方法的children会有_属性
     if ((children as RawSlots)._ === 1) {
       instance.slots = children as InternalSlots
     } else {

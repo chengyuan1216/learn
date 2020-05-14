@@ -190,13 +190,15 @@ export function createComponentInstance(
   suspense: SuspenseBoundary | null
 ) {
   // inherit parent app context - or - if root, adopt from root vnode
+  // 获取appContext
   const appContext =
     (parent ? parent.appContext : vnode.appContext) || emptyAppContext
+  // 组件实例
   const instance: ComponentInternalInstance = {
-    uid: uid++,
-    vnode,
+    uid: uid++, // 组件id
+    vnode,  // 创建组件时的vnode
     parent,
-    appContext,
+    appContext, // app上下文
     type: vnode.type as Component,
     root: null!, // to be immediately set
     next: null,
@@ -208,6 +210,9 @@ export function createComponentInstance(
     withProxy: null,
     setupContext: null,
     effects: null,
+    // [TODO]
+    // 这里为什么不直接Object.create(parent.provides)呢？
+    // 而是在apiinject处理的
     provides: parent ? parent.provides : Object.create(appContext.provides), // 继承appContext
     accessCache: null!,
     renderCache: [],
@@ -253,6 +258,7 @@ export function createComponentInstance(
     ec: null,
     emit: null as any // to be set immediately
   }
+  // proxyTarget 是一个公共接口，对外使用
   if (__DEV__) {
     instance.proxyTarget = createDevProxyTarget(instance)
   } else {
@@ -311,7 +317,7 @@ function setupStatefulComponent(
   isSSR: boolean
 ) {
   const Component = instance.type as ComponentOptions
-
+  // 验证组件名称
   if (__DEV__) {
     if (Component.name) {
       validateComponentName(Component.name, instance.appContext.config)
@@ -332,27 +338,35 @@ function setupStatefulComponent(
   // 0. create render proxy property access cache
   instance.accessCache = {}
   // 1. create public instance / render proxy
+  // proxy 对外的接口
   instance.proxy = new Proxy(instance.proxyTarget, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnDevProxyTarget(instance)
   }
-  // 2. call setup()
+  // 2. call setup() 执行setup setup在beforeCreate之前执行
   const { setup } = Component
   if (setup) {
+    // 创建setup的参数
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
-
+    
+    // 将当前实例赋值给currentInstance
     currentInstance = instance
+    // 暂停收集依赖
     pauseTracking()
+    // setup函数的返回值
     const setupResult = callWithErrorHandling(
       setup,
       instance,
       ErrorCodes.SETUP_FUNCTION,
-      [instance.props, setupContext]
+      [instance.props, setupContext] // 第一个参数是props
     )
+    // 重置
     resetTracking()
     currentInstance = null
-
+    
+    // [TODO]
+    // 如果返回值是一个promise, 则是一个异步组件
     if (isPromise(setupResult)) {
       if (isSSR) {
         // return the promise so server-renderer can wait on it
@@ -377,15 +391,18 @@ function setupStatefulComponent(
   }
 }
 
+// 处理setup的返回值
 export function handleSetupResult(
   instance: ComponentInternalInstance,
   setupResult: unknown,
   isSSR: boolean
 ) {
+  // 如果返回值是一个函数，则作为render方法
   if (isFunction(setupResult)) {
     // setup returned an inline render function
     instance.render = setupResult as RenderFunction
   } else if (isObject(setupResult)) {
+    // 如果直接返回vnode会警告
     if (__DEV__ && isVNode(setupResult)) {
       warn(
         `setup() should not return VNodes directly - ` +
@@ -405,6 +422,7 @@ export function handleSetupResult(
       }`
     )
   }
+  // 执行完setup后
   finishComponentSetup(instance, isSSR)
 }
 
@@ -424,6 +442,7 @@ function finishComponentSetup(
   instance: ComponentInternalInstance,
   isSSR: boolean
 ) {
+  // 获取组件的options
   const Component = instance.type as ComponentOptions
 
   // template / render function normalization
@@ -432,6 +451,8 @@ function finishComponentSetup(
       instance.render = Component.render as RenderFunction
     }
   } else if (!instance.render) {
+    // options 未定义render方法
+    // 则会把template编译成render方法
     if (compile && Component.template && !Component.render) {
       if (__DEV__) {
         startMeasure(instance, `compile`)
@@ -443,6 +464,7 @@ function finishComponentSetup(
         endMeasure(instance, `compile`)
       }
       // mark the function as runtime compiled
+      // 如果是运行时编译
       ;(Component.render as RenderFunction)._rc = true
     }
 
@@ -473,6 +495,8 @@ function finishComponentSetup(
   }
 
   // support for 2.x options
+  // 兼容options接口
+  // 可通过rollup打包去掉options
   if (__FEATURE_OPTIONS__) {
     currentInstance = instance
     applyOptions(instance, Component)

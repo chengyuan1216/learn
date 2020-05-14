@@ -107,7 +107,9 @@ export function initProps(
   def(attrs, InternalObjectSymbol, true)
   setFullProps(instance, rawProps, props, attrs)
   const options = instance.type.props
+
   // validation
+  // 验证从父组件传进来的数据
   if (__DEV__ && options && rawProps) {
     validateProps(props, options)
   }
@@ -203,6 +205,7 @@ function setFullProps(
   props: Data,
   attrs: Data
 ) {
+  // 获取在组件内部通过props定义的prop
   const { 0: options, 1: needCastKeys } = normalizePropsOptions(
     instance.type.props
   )
@@ -212,6 +215,7 @@ function setFullProps(
     for (const key in rawProps) {
       const value = rawProps[key]
       // key, ref are reserved and never passed down
+      // 如果是属性key、ref
       if (isReservedProp(key)) {
         continue
       }
@@ -219,11 +223,13 @@ function setFullProps(
       // kebab -> camel conversion here we need to camelize the key.
       let camelKey
       if (options && hasOwn(options, (camelKey = camelize(key)))) {
+        // 如果在props上有定义则把属性放在对象props上
         props[camelKey] = value
       } else if (!emits || !isEmitListener(emits, key)) {
         // Any non-declared (either as a prop or an emitted event) props are put
         // into a separate `attrs` object for spreading. Make sure to preserve
         // original key casing
+        // 把除了props和事件之外的所以后属性放在attrs上
         attrs[key] = value
       }
     }

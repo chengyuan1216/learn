@@ -4,6 +4,7 @@ import { warn } from './warning'
 
 export interface InjectionKey<T> extends Symbol {}
 
+// 将父组件的数据提供给子组件
 export function provide<T>(key: InjectionKey<T> | string, value: T) {
   if (!currentInstance) {
     if (__DEV__) {
@@ -26,6 +27,7 @@ export function provide<T>(key: InjectionKey<T> | string, value: T) {
   }
 }
 
+// 子组件获取父组件的数据
 export function inject<T>(key: InjectionKey<T> | string): T | undefined
 export function inject<T>(key: InjectionKey<T> | string, defaultValue: T): T
 export function inject(

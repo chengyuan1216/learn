@@ -71,7 +71,7 @@ export function patchEvent(
   nextValue: EventValueWithOptions | EventValue | null,
   instance: ComponentInternalInstance | null = null // 组件实例
 ) {
-  debugger
+  
   const name = rawName.slice(2).toLowerCase()
   const prevOptions = prevValue && 'options' in prevValue && prevValue.options
   const nextOptions = nextValue && 'options' in nextValue && nextValue.options
@@ -124,7 +124,6 @@ function createInvoker(
   instance: ComponentInternalInstance | null
 ) {
   const invoker: Invoker = (e: Event) => {
-    debugger
     // async edge case #6566: inner click event triggers patch, event handler
     // attached to outer element during patch, and triggered again. This
     // happens because browsers fire microtask ticks between event propagation.

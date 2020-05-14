@@ -319,6 +319,7 @@ function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
 ): any {
+  // 框架底层dom操作
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -348,6 +349,8 @@ function baseCreateRenderer(
     optimized = false
   ) => {
     // patching & not same type, unmount old tree
+    // 如果n1存在，并且n1 和 n2不是同一个节点
+    // 则将n1销毁，将n1的下一个dom作为anchor
     if (n1 && !isSameVNodeType(n1, n2)) {
       anchor = getNextHostNode(n1)
       unmount(n1, parentComponent, parentSuspense, true)
@@ -356,18 +359,18 @@ function baseCreateRenderer(
 
     const { type, ref, shapeFlag } = n2
     switch (type) {
-      case Text:
+      case Text: // 文本节点
         processText(n1, n2, container, anchor)
         break
-      case Comment:
+      case Comment: // 注释节点
         processCommentNode(n1, n2, container, anchor)
         break
-      case Static:
+      case Static: // 静态节点
         if (n1 == null) {
           mountStaticNode(n2, container, anchor, isSVG)
         } // static nodes are noop on patch
         break
-      case Fragment:
+      case Fragment: // Fragment节点
         processFragment(
           n1,
           n2,
@@ -380,7 +383,7 @@ function baseCreateRenderer(
         )
         break
       default:
-        if (shapeFlag & ShapeFlags.ELEMENT) {
+        if (shapeFlag & ShapeFlags.ELEMENT) {  // dom节点
           processElement(
             n1,
             n2,
@@ -391,7 +394,7 @@ function baseCreateRenderer(
             isSVG,
             optimized
           )
-        } else if (shapeFlag & ShapeFlags.COMPONENT) {
+        } else if (shapeFlag & ShapeFlags.COMPONENT) { // 自定义组件节点
           processComponent(
             n1,
             n2,
@@ -402,7 +405,7 @@ function baseCreateRenderer(
             isSVG,
             optimized
           )
-        } else if (shapeFlag & ShapeFlags.TELEPORT) {
+        } else if (shapeFlag & ShapeFlags.TELEPORT) { // TELEPORT
           ;(type as typeof TeleportImpl).process(
             n1,
             n2,
@@ -414,7 +417,7 @@ function baseCreateRenderer(
             optimized,
             internals
           )
-        } else if (__FEATURE_SUSPENSE__ && shapeFlag & ShapeFlags.SUSPENSE) {
+        } else if (__FEATURE_SUSPENSE__ && shapeFlag & ShapeFlags.SUSPENSE) { // SUSPENSE
           ;(type as typeof SuspenseImpl).process(
             n1,
             n2,
@@ -439,6 +442,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 创建text节点
   const processText: ProcessTextOrCommentFn = (n1, n2, container, anchor) => {
     if (n1 == null) {
       hostInsert(
@@ -454,6 +458,7 @@ function baseCreateRenderer(
     }
   }
 
+  // Comment
   const processCommentNode: ProcessTextOrCommentFn = (
     n1,
     n2,
@@ -461,6 +466,7 @@ function baseCreateRenderer(
     anchor
   ) => {
     if (n1 == null) {
+      // 创建一个comment节点， 并且将创建好的comment节点挂在vnode的el属性上
       hostInsert(
         (n2.el = hostCreateComment((n2.children as string) || '')),
         container,
@@ -468,6 +474,7 @@ function baseCreateRenderer(
       )
     } else {
       // there's no support for dynamic comments
+      // comment不支持动态节点
       n2.el = n1.el
     }
   }
@@ -492,6 +499,7 @@ function baseCreateRenderer(
     }
   }
 
+  // element
   const processElement = (
     n1: VNode | null,
     n2: VNode,
@@ -518,6 +526,7 @@ function baseCreateRenderer(
     }
   }
 
+  // element 第一次patch
   const mountElement = (
     vnode: VNode,
     container: RendererElement,
@@ -546,8 +555,10 @@ function baseCreateRenderer(
       // If a vnode has non-null el, it means it's being reused.
       // Only static vnodes can be reused, so its mounted DOM nodes should be
       // exactly the same, and we can simply do a clone here.
+      // 如果可以复制， 则直接复制节点
       el = vnode.el = hostCloneNode(vnode.el)
     } else {
+      // 创建节点
       el = vnode.el = hostCreateElement(
         vnode.type as string,
         isSVG,
@@ -555,15 +566,19 @@ function baseCreateRenderer(
       )
       // props
       if (props) {
+        // patch props
         for (const key in props) {
           if (!isReservedProp(key)) {
             hostPatchProp(el, key, null, props[key], isSVG)
           }
         }
+        // 如果给节点注册了vnodeBeforeMount事件
         if ((vnodeHook = props.onVnodeBeforeMount)) {
           invokeVNodeHook(vnodeHook, parentComponent, vnode)
         }
       }
+
+      // 如果有指令则执行指令的beforeMount方法
       if (dirs) {
         invokeDirectiveHook(vnode, null, parentComponent, 'beforeMount')
       }
@@ -597,7 +612,7 @@ function baseCreateRenderer(
         transition.beforeEnter(el)
       }
     }
-
+    // 将节点插入到文档中
     hostInsert(el, container, anchor)
     if (
       (vnodeHook = props && props.onVnodeMounted) ||
@@ -612,6 +627,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 处理chilren 这是一个数组
   const mountChildren: MountChildrenFn = (
     children,
     container,
@@ -866,6 +882,7 @@ function baseCreateRenderer(
     }
   }
 
+  // Fragment
   const processFragment = (
     n1: VNode | null,
     n2: VNode,
@@ -876,6 +893,7 @@ function baseCreateRenderer(
     isSVG: boolean,
     optimized: boolean
   ) => {
+    // 使用两个空文本节点来标识Fragment的位置
     const fragmentStartAnchor = (n2.el = n1 ? n1.el : hostCreateText(''))!
     const fragmentEndAnchor = (n2.anchor = n1 ? n1.anchor : hostCreateText(''))!
 
@@ -891,7 +909,9 @@ function baseCreateRenderer(
       dynamicChildren = null
     }
 
+    // 如果是第一次patch
     if (n1 == null) {
+      // 将两个空文本节点插入到container
       hostInsert(fragmentStartAnchor, container, anchor)
       hostInsert(fragmentEndAnchor, container, anchor)
       // a fragment can only have array children
@@ -937,6 +957,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 自定义组件
   const processComponent = (
     n1: VNode | null,
     n2: VNode,
@@ -974,8 +995,8 @@ function baseCreateRenderer(
 
   // 根据vnode创建组件对象
   const mountComponent: MountComponentFn = (
-    initialVNode,
-    container,
+    initialVNode, // 要创建组件实例的vnode
+    container,    // 挂载的dom
     anchor,
     parentComponent,
     parentSuspense,
@@ -1019,6 +1040,7 @@ function baseCreateRenderer(
 
     // setup() is async. This component relies on async logic to be resolved
     // before proceeding
+    // 异步组件
     if (__FEATURE_SUSPENSE__ && instance.asyncDep) {
       if (!parentSuspense) {
         if (__DEV__) warn('async setup() is used without a suspense boundary!')
@@ -1106,6 +1128,7 @@ function baseCreateRenderer(
     // create reactive effect for rendering
     // 更新组件的方法
     instance.update = effect(function componentEffect() {
+      // 在执行createApp时也有一个isMounted
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
         const { el, props } = initialVNode
@@ -1113,11 +1136,14 @@ function baseCreateRenderer(
         if (__DEV__) {
           startMeasure(instance, `render`)
         }
+        // 执行instance.render 返回subTree vnode
         const subTree = (instance.subTree = renderComponentRoot(instance))
         if (__DEV__) {
           endMeasure(instance, `render`)
         }
+
         // beforeMount hook
+        // 执行beforeMount钩子
         if (bm) {
           invokeArrayFns(bm)
         }
@@ -1143,6 +1169,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
+          // 第一次patch
           patch(
             null,
             subTree,
@@ -1152,6 +1179,7 @@ function baseCreateRenderer(
             parentSuspense,
             isSVG
           )
+          
           if (__DEV__) {
             endMeasure(instance, `patch`)
           }
@@ -1885,6 +1913,7 @@ function baseCreateRenderer(
     }
   }
 
+  // 找到vnode的下一个dom节点
   const getNextHostNode: NextFn = vnode => {
     if (vnode.shapeFlag & ShapeFlags.COMPONENT) {
       return getNextHostNode(vnode.component!.subTree)
@@ -1941,7 +1970,7 @@ function baseCreateRenderer(
 
   // 根节点render
   const render: RootRenderFunction = (vnode, container) => {
-    // 如果传入的vnode为空
+    // 如果传入的vnode为空, 则表示销毁组件
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
@@ -1949,6 +1978,8 @@ function baseCreateRenderer(
     } else {
       patch(container._vnode || null, vnode, container)
     }
+    
+    // 开启任务队列
     flushPostFlushCbs()
     container._vnode = vnode
   }

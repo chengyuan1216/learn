@@ -1,0 +1,6 @@
+1、所有组件的data只能是function
+2、增加emits来声明$emit
+3、beforeCreate 和 created只能在options定义，并没有提供onBeforeCreate和onCreated方法
+4、currentInsatnce 和 currentRenderingInsatnce
+5、支持给节点注册vnodeBeforeMount等事件
+6、$nextTick的回调不在是加入异步队列， 而是重新开了一个异步任务，和直接使用Promise.resolve()一样的效果。
