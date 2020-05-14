@@ -23,54 +23,62 @@
 </script>
 <!-- item script -->
 <script>
-const TreeItem = {
-  name: 'TreeItem', // necessary for self-reference
-  template: '#item-template',
-  props: {
-    model: Object
-  },
-  data() {
-    return {
-      open: false
-    }
-  },
-  computed: {
-    isFolder() {
-      return this.model.children &&
-        this.model.children.length
-    }
-  },
-  beforeMount() {
- 
-  },
-  mounted() {
- 
-  },
-  methods: {
-    handleVnodeBeforeMount(a, b, c, d) {
-      console.log('handleVnodeBeforeMount', a, b, c, d)
-    },
-    toggle(ev) {
-      console.log(this)
-      if (this.isFolder) {
-        this.open = !this.open
-      }
-      this.$emit('toggle')
-    },
-    changeType() {
-      if (!this.isFolder) {
-        this.model.children = []
-        this.addChild()
-        this.open = true
-      }
-    },
-    addChild() {
-      this.model.children.push({
-        name: 'new stuff'
-      })
-    }
+const TreeItem = Vue.defineAsyncComponent(
+  function() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          name: 'TreeItem', // necessary for self-reference
+          template: '#item-template',
+          props: {
+            model: Object
+          },
+          data() {
+            return {
+              open: false
+            }
+          },
+          computed: {
+            isFolder() {
+              return this.model.children &&
+                this.model.children.length
+            }
+          },
+          beforeMount() {
+        
+          },
+          mounted() {
+        
+          },
+          methods: {
+            handleVnodeBeforeMount(a, b, c, d) {
+              console.log('handleVnodeBeforeMount', a, b, c, d)
+            },
+            toggle(ev) {
+              console.log(this)
+              if (this.isFolder) {
+                this.open = !this.open
+              }
+              this.$emit('toggle')
+            },
+            changeType() {
+              if (!this.isFolder) {
+                this.model.children = []
+                this.addChild()
+                this.open = true
+              }
+            },
+            addChild() {
+              this.model.children.push({
+                name: 'new stuff'
+              })
+            }
+          }
+        })
+      }, 3000)
+    })
   }
-}
+)
 </script>
 
 <!-- the app root element -->
@@ -79,8 +87,15 @@ const TreeItem = {
   <!-- <tree-item class="item" a="1" b="3" @toggle="handleToggle" ref="tree" :model="treeData">
     <div>999</div>
   </tree-item> -->
-  <div>{{a}}</div> 
-  <div v-html="htmlStr"></div>
+  <suspense>
+    <template v-slot:default>
+      <!-- <div>{{a}}</div>  -->
+      <tree-item class="item" a="1" b="3" @toggle="handleToggle" ref="tree" :model="treeData"></tree-item>
+    </template>
+    <template v-slot:fallback>
+      <div>fallback</div>
+    </template>
+  </suspense>
 </ul>
 
 <script>
@@ -123,7 +138,10 @@ window.app = Vue.createApp({
     let htmlStr = Vue.ref(`<div>hhhhh</div>`)
     return {
       a,
-      htmlStr
+      htmlStr,
+      setHtml: (str) => {
+        htmlStr.value = str
+      }
     }
   },
   beforeMount() {
@@ -137,6 +155,24 @@ window.app = Vue.createApp({
   data: () => ({
     treeData
   }),
+  render(vm) {
+    console.log(this, 'vm ==> ')
+    let {createVNode, createStaticVNode, openBlock, createBlock, Fragment} = Vue
+    return openBlock(), createBlock(Fragment, null, [
+      createStaticVNode(this.htmlStr),
+      createVNode('div', {
+        style: {
+          color: 'red'
+        }
+      }, this.htmlStr)
+    ])
+
+    // return createVNode('div', {
+    //     style: {
+    //       color: 'red'
+    //     }
+    //   }, this.htmlStr)
+  },
   methods: {
     handleToggle() {
       console.log('toggle ====> ')

@@ -87,6 +87,7 @@ function mountSuspense(
   optimized: boolean,
   rendererInternals: RendererInternals
 ) {
+  debugger
   const {
     p: patch,
     o: { createElement }
@@ -247,11 +248,13 @@ function createSuspenseBoundary(
     o: { parentNode }
   } = rendererInternals
 
+  // 获取subTree
   const getCurrentTree = () =>
     suspense.isResolved || suspense.isHydrating
       ? suspense.subTree
       : suspense.fallbackTree
 
+  // 获取异步组件的内容
   const { content, fallback } = normalizeSuspenseChildren(vnode)
   const suspense: SuspenseBoundary = {
     vnode,
@@ -522,6 +525,9 @@ export function normalizeSuspenseChildren(
   fallback: VNode
 } {
   const { shapeFlag, children } = vnode
+  // 如果是slot 
+  // default slot
+  // fallback slot
   if (shapeFlag & ShapeFlags.SLOTS_CHILDREN) {
     const { default: d, fallback } = children as Slots
     return {
@@ -529,6 +535,7 @@ export function normalizeSuspenseChildren(
       fallback: normalizeVNode(isFunction(fallback) ? fallback() : fallback)
     }
   } else {
+    // 有可能是手写render, 此时返回的不是一个function
     return {
       content: normalizeVNode(children as VNodeChild),
       fallback: normalizeVNode(null)

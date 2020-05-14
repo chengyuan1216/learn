@@ -87,4 +87,14 @@ data.c = 2
 //     b: 'b'
 //   })
 // }).mount('#demo')
+new Promise((resolve, reject) => {
+  reject(new Error('error:'))
+}).then(() => {
+  console.log('llll')
+  return '000'
+}).then(() => {
+  console.log('2222')
+}).catch(err => {
+  console.log(err)
+})
 </script>

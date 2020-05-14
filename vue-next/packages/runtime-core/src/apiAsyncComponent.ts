@@ -39,6 +39,7 @@ export interface AsyncComponentOptions<T = any> {
 export function defineAsyncComponent<
   T extends PublicAPIComponent = { new (): ComponentPublicInstance }
 >(source: AsyncComponentLoader<T> | AsyncComponentOptions<T>): T {
+  // 如果是一个函数式组件
   if (isFunction(source)) {
     source = { loader: source }
   }
@@ -53,8 +54,8 @@ export function defineAsyncComponent<
     onError: userOnError
   } = source
 
-  let pendingRequest: Promise<Component> | null = null
-  let resolvedComp: Component | undefined
+  let pendingRequest: Promise<Component> | null = null // 请求组件返回一个promise
+  let resolvedComp: Component | undefined // 异步返回的到的组件对象
 
   let retries = 0
   const retry = () => {
@@ -63,6 +64,7 @@ export function defineAsyncComponent<
     return load()
   }
 
+  // 加载组件对象
   const load = (): Promise<Component> => {
     let thisRequest: Promise<Component>
     return (
@@ -170,7 +172,8 @@ export function defineAsyncComponent<
           onError(err)
           error.value = err
         })
-
+      
+      // 返回一个render 方法
       return () => {
         if (loaded.value && resolvedComp) {
           return createInnerComp(resolvedComp, instance)

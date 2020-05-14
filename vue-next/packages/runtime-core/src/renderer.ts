@@ -1970,6 +1970,7 @@ function baseCreateRenderer(
 
   // 根节点render
   const render: RootRenderFunction = (vnode, container) => {
+    debugger
     // 如果传入的vnode为空, 则表示销毁组件
     if (vnode == null) {
       if (container._vnode) {

@@ -209,6 +209,7 @@ const isElementRoot = (vnode: VNode) => {
   )
 }
 
+// 是否要更新组件
 export function shouldUpdateComponent(
   prevVNode: VNode,
   nextVNode: VNode,
@@ -232,6 +233,7 @@ export function shouldUpdateComponent(
   }
 
   // force child update for runtime directive or transition on component vnode.
+  // 如果存在指令则更新
   if (nextVNode.dirs || nextVNode.transition) {
     return true
   }
@@ -277,6 +279,7 @@ export function shouldUpdateComponent(
   return false
 }
 
+// 判断props是否改变
 function hasPropsChanged(prevProps: Data, nextProps: Data): boolean {
   const nextKeys = Object.keys(nextProps)
   if (nextKeys.length !== Object.keys(prevProps).length) {
@@ -291,6 +294,7 @@ function hasPropsChanged(prevProps: Data, nextProps: Data): boolean {
   return false
 }
 
+// 更新高阶组件
 export function updateHOCHostEl(
   { vnode, parent }: ComponentInternalInstance,
   el: typeof vnode.el // HostNode
