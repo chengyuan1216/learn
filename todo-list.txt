@@ -4,3 +4,4 @@
 4、DOM
 5、http://www.w3.org/1999/xlink  http://www.w3.org/2000/svg
 6、表格https://github.com/ag-grid/ag-grid
+7、不使用new Function() 和 eval() 解析执行一段js代码。

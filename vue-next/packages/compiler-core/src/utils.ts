@@ -133,6 +133,7 @@ export function advancePositionWithClone(
 
 // advance by mutation without cloning (for performance reasons), since this
 // gets called a lot in the parser
+// 更新sursor
 export function advancePositionWithMutation(
   pos: Position,
   source: string,
@@ -140,6 +141,7 @@ export function advancePositionWithMutation(
 ): Position {
   let linesCount = 0
   let lastNewLinePos = -1
+  // 遍历判断是否有换行符
   for (let i = 0; i < numberOfCharacters; i++) {
     if (source.charCodeAt(i) === 10 /* newline char code */) {
       linesCount++

@@ -1,0 +1,13 @@
+<script src="../../dist/vue.global.js"></script>
+<style>
+ 
+</style>
+<script>
+  debugger
+var r = Vue.compile(`<div id="demo" v-cloak>
+    <p v-if="a">{{a}}</p>
+    <p v-show="b">{{b}}</p>
+    <p>{{c}}</p>
+</div>`)
+console.log(r)
+</script>

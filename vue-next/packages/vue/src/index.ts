@@ -11,7 +11,7 @@ function compileToFunction(
   template: string | HTMLElement,
   options?: CompilerOptions
 ): RenderFunction {
-  console.log('liuchengyuan')
+  // 如果不是一个字符串， 传入的是一个dom元素
   if (!isString(template)) {
     if (template.nodeType) {
       template = template.innerHTML
@@ -21,12 +21,14 @@ function compileToFunction(
     }
   }
 
+  // 对编译结果进行缓存
   const key = template
   const cached = compileCache[key]
   if (cached) {
     return cached
   }
 
+  // 如果传入的是一个id选择器
   if (template[0] === '#') {
     const el = document.querySelector(template)
     if (__DEV__ && !el) {

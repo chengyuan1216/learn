@@ -1,0 +1,62 @@
+<script src="../../dist/vue.global.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/acorn/7.2.0/acorn.js"></script>
+<style>
+ 
+</style>
+<script>
+class JSExec {
+  constructor() {
+    this.callFunc = {}
+    this.callObjFunc = {}
+    this.registerFunc('alert', alert)
+    this.registerObjFunc('console', 'log', console.log)
+  }
+
+  registerFunc(funcNme, func) {
+    debugger
+    this.callFunc[funcNme] = func
+  }
+
+  registerObjFunc(objName, funcNme, func) {
+    this.callObjFunc[objName] = this.callObjFunc[objName] || {}
+    this.callObjFunc[objName][funcNme] = func
+  }
+
+  getArguments(nodes) {
+    return nodes.map(node => node.value)
+  }
+
+  exec(codeStr) {
+    let ast = acorn.parse(codeStr)
+    console.log(ast)
+    let body = ast.body
+    let node 
+    let callee
+    for (let i = 0; i < body.length; i++) {
+      node = body[i]
+      // 表达式
+      if (node.type = "ExpressionStatement") {
+        // 声明变量
+
+
+        // 执行方法
+        if (node.expression && node.expression.type === "CallExpression") {
+          // 直接执行，比如alert(0)
+          if (node.expression.callee.name) {
+            callee = this.callFunc[node.expression.callee.name]
+            typeof  callee == 'function' && callee(this.getArguments(node.expression.arguments))
+          } else if (node.expression.callee.object) { // 调用对象的方法
+            let obj = this.callObjFunc[node.expression.callee.object.name]
+            callee = obj[node.expression.callee.property.name]
+            typeof  callee == 'function' && callee(this.getArguments(node.expression.arguments))
+          }
+        }
+      }
+    }
+  }
+}
+new JSExec().exec(`
+var a = 1
+console.log(a)
+`)
+</script>
