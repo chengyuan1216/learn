@@ -4,6 +4,9 @@
     :class="[selectSize ? 'el-select--' + selectSize : '']"
     @click.stop="toggleMenu"
     v-clickoutside="handleClose">
+    <!--
+      tags
+    -->
     <div
       class="el-select__tags"
       v-if="multiple"
@@ -344,6 +347,7 @@
       },
 
       value(val, oldVal) {
+        // 多选
         if (this.multiple) {
           this.resetInputHeight();
           if ((val && val.length > 0) || (this.$refs.input && this.query !== '')) {

@@ -166,20 +166,14 @@ window.app = Vue.createApp({
         }
       }, this.htmlStr)
     ])
-
-    // return createVNode('div', {
-    //     style: {
-    //       color: 'red'
-    //     }
-    //   }, this.htmlStr)
   },
   methods: {
     handleToggle() {
       console.log('toggle ====> ')
     }
   }
-}).mount('#demo')
-
+}).mount(window.wrap = document.createElement('fragment'))
+document.body.append(wrap)
 // performance.mark('end')
 // performance.measure('test123', 'start', 'end')
 // performance.clearMarks('start')
