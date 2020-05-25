@@ -18,9 +18,9 @@
     "src",
     "main.ts",
     "vue.d.ts",
-    "../packages/global.d.ts",
-    "../packages/runtime-dom/jsx.d.ts",
-    "../packages/reactivity/dist/reactivity.d.ts"
+    // "../packages/global.d.ts",
+    // "../packages/runtime-dom/jsx.d.ts",
+    // "../packages/reactivity/dist/reactivity.d.ts"
   ],
   "exclude": [
     "node_modules"

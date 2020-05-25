@@ -40,7 +40,11 @@ const compiler = webpack({
         rules: [
             {
                 test: /\.ts$/,
-                loader: 'awesome-typescript-loader'
+                use: [
+                    'awesome-typescript-loader',
+                    {
+                        loader: path.resolve(__dirname, 'emitloader.js')                    }
+                ]
             }
         ]
     }
@@ -62,3 +66,6 @@ const server = new WebapckDevServer(compiler, devServerOption)
 server.listen(devServerOption.port, () => {
     console.log('dev server')
 })
+
+
+
