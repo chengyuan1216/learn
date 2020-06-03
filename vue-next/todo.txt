@@ -1,5 +1,5 @@
 1、所有组件的data只能是function
-2、增加emits来声明$emit
+2、增加emits来声明$emit 删除多余代码
 3、beforeCreate 和 created只能在options定义，并没有提供onBeforeCreate和onCreated方法
 4、currentInsatnce 和 currentRenderingInsatnce
 5、支持给节点注册vnodeBeforeMount等事件
