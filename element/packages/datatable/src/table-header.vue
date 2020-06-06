@@ -30,12 +30,12 @@ export default {
   data() {
     return {
 
-    }
+    };
   },
   computed: {
 
   }
-}
+};
 </script>
 
 <style lang="scss">

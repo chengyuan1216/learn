@@ -23,14 +23,14 @@
 </template>
 
 <script>
-import { addResizeListener, removeResizeListener } from './helpers/resize-event'
+import { addResizeListener, removeResizeListener } from './helpers/resize-event';
 import { debounce, throttle } from 'throttle-debounce';
-import EventType  from './helpers/eventType'
+import EventType from './helpers/eventType';
 const BAR_TYPE = {
   V: 'vertical',
   H: 'horizontal'
-}
-const MIN_THUMB_SIZE = 20
+};
+const MIN_THUMB_SIZE = 20;
 export default {
   props: {
     store: {
@@ -48,93 +48,93 @@ export default {
       scrollx: false,
       scrolly: false,
       BAR_TYPE,
-      type:null,
+      type: null,
       scrollTop: 0,
       scrollLeft: 0
-    }
+    };
   },
   computed: {
     width() {
-      return this.scrollx? this.maxWidth + 'px': 'auto'
+      return this.scrollx ? this.maxWidth + 'px' : 'auto';
     },
 
     // 滚动条的高度
     verticalThumb() {
-      let {itemHeight, viewHeight} = this.store.context
-      return Math.max(viewHeight / (this.store.dataSize * itemHeight) * viewHeight, MIN_THUMB_SIZE)
+      let {itemHeight, viewHeight} = this.store.context;
+      return Math.max(viewHeight / (this.store.dataSize * itemHeight) * viewHeight, MIN_THUMB_SIZE);
     }
   },
   created() {
   },
   mounted() {
-    this.bindEvents()
+    this.bindEvents();
   },
   beforeDestroy() {
-    this.removeEvents()
+    this.removeEvents();
   },
   methods: {
     bindEvents() {
-      let {eventBus} = this.store.context
-      addResizeListener(this.$refs.view, this.handleResize)
-      document.addEventListener('mouseup', this.handleMouseup)
-      eventBus.$on(EventType.VIEW_UPDATE, this.handleViewUpdate)
+      let {eventBus} = this.store.context;
+      addResizeListener(this.$refs.view, this.handleResize);
+      document.addEventListener('mouseup', this.handleMouseup);
+      eventBus.$on(EventType.VIEW_UPDATE, this.handleViewUpdate);
     },
 
     removeEvents() {
-      let {eventBus} = this.store.context
-      removeResizeListener(this.$refs.view, this.handleResize)
-      document.removeEventListener('mouseup', this.handleMouseup)
-      eventBus.$off(EventType.VIEW_UPDATE, this.handleViewUpdate)
+      let {eventBus} = this.store.context;
+      removeResizeListener(this.$refs.view, this.handleResize);
+      document.removeEventListener('mouseup', this.handleMouseup);
+      eventBus.$off(EventType.VIEW_UPDATE, this.handleViewUpdate);
     },
 
     syncScrollTopByOffset(offset, cursorPosition) {
-      let top = Math.max(offset - cursorPosition, 0)
-      this.scrollTop = Math.min(top, this.maxHeight - this.verticalThumb)
+      let top = Math.max(offset - cursorPosition, 0);
+      this.scrollTop = Math.min(top, this.maxHeight - this.verticalThumb);
     },
 
     handleViewUpdate(event) {
-      this.syncScrollTopByOffset(event.verticalPercent * (this.maxHeight-this.verticalThumb), 0)
+      this.syncScrollTopByOffset(event.verticalPercent * (this.maxHeight - this.verticalThumb), 0);
     },
 
     handleResize(entry) {
-      let { contentRect } = entry
-      this.scrolly = this.maxHeight !== undefined? contentRect.height >= this.maxHeight: false
-      this.scrollx = this.maxWidth !== undefined? contentRect.width >= this.maxWidth: false
+      let { contentRect } = entry;
+      this.scrolly = this.maxHeight !== undefined ? contentRect.height >= this.maxHeight : false;
+      this.scrollx = this.maxWidth !== undefined ? contentRect.width >= this.maxWidth : false;
     },
 
     handleMouseDown(ev, type) {
-      ev.stopImmediatePropagation()
-      this.type = type
-      this.cursorPosition = Math.abs(this.$refs[type+'_thumb'].getBoundingClientRect().top - ev.clientY)
-      document.onselectstart = () => false
-      document.addEventListener('mousemove', this.handleMousemove)
+      ev.stopImmediatePropagation();
+      this.type = type;
+      this.cursorPosition = Math.abs(this.$refs[type + '_thumb'].getBoundingClientRect().top - ev.clientY);
+      document.onselectstart = () => false;
+      document.addEventListener('mousemove', this.handleMousemove);
     },
 
     handleMousemove(ev) {
-      if (!this.type) return 
+      if (!this.type) return;
       this.$nextTick(() => {
         if (this.type == BAR_TYPE.V) {
-          let {itemHeight, viewHeight, eventBus} = this.store.context
-          let offset = ev.clientY - this.$refs[this.type].getBoundingClientRect().top
-          this.syncScrollTopByOffset(offset, this.cursorPosition)
+          let {itemHeight, viewHeight, eventBus} = this.store.context;
+          let offset = ev.clientY - this.$refs[this.type].getBoundingClientRect().top;
+          this.syncScrollTopByOffset(offset, this.cursorPosition);
           // 通过事件去更新数据
           eventBus.$emit(EventType.VIEW_SCROLL, {
             scrollTop: this.scrollTop,
             scrollHeight: this.maxHeight,
             verticalThumb: this.verticalThumb,
             verticalPercent: this.scrollTop / (this.maxHeight - this.verticalThumb)
-          }) 
+          });
         }
-      })
+      });
     },
 
     handleMouseup(ev) {
-      this.type = null
-      document.removeEventListener('mousemove', this.handleMousemove)
-      document.onselectstart = null
+      this.type = null;
+      document.removeEventListener('mousemove', this.handleMousemove);
+      document.onselectstart = null;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

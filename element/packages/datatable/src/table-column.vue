@@ -10,7 +10,7 @@ export default {
   },
 
   created() {
-    let tableParent = this.getTableParent()
+    let tableParent = this.getTableParent();
     if (!tableParent) {
       throw new Error('未找到el-datatable父组件');
       return;

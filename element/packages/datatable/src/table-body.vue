@@ -17,9 +17,9 @@
 </template>
 
 <script>
-import { getTableParent } from './helpers/utils'
-import EventType from './helpers/eventType'
-import tableRow from './table-row'
+import { getTableParent } from './helpers/utils';
+import EventType from './helpers/eventType';
+import tableRow from './table-row';
 export default {
   props: {
     itemHeight: { // 定义表格的逻辑行的高度， 跟每一次滚动的距离有关
@@ -62,54 +62,54 @@ export default {
     }
   },
   created() {
-    this.store = this.getTableParent().store
-    this.eventBus = this.getTableParent().eventBus
-    this.eventBus.$on(EventType.VIEW_SCROLL, this.updateByEvent)
+    this.store = this.getTableParent().store;
+    this.eventBus = this.getTableParent().eventBus;
+    this.eventBus.$on(EventType.VIEW_SCROLL, this.updateByEvent);
   },
   beforeDestroy() {
-    this.eventBus.$off(EventType.VIEW_SCROLL, this.updateByEvent)
+    this.eventBus.$off(EventType.VIEW_SCROLL, this.updateByEvent);
   },
   methods: {
     getTableParent,
     setData(data) {
       this.$nextTick(() => {
-        this.dataAmount = data.length
-        this.update(0)
-      })
+        this.dataAmount = data.length;
+        this.update(0);
+      });
     },
     update(scrollTop) {
-      scrollTop = scrollTop === undefined ? this.scrollTop : scrollTop
+      scrollTop = scrollTop === undefined ? this.scrollTop : scrollTop;
       requestAnimationFrame(() => {
-        this.filter(scrollTop)
+        this.filter(scrollTop);
         this.eventBus.$emit(EventType.VIEW_UPDATE, {
           verticalPercent: scrollTop / (this.dataAmount - this.size) / this.itemHeight
-        })
-      })
+        });
+      });
     },
     filter(scrollTop) {
-      let translate = scrollTop / this.itemHeight
-      this.startIndex = parseInt(translate)
-      this.transform = `translate3d(0, ${-scrollTop + this.startIndex * this.itemHeight}px, 0)`
-      this.dataList = this.store.getTableData(this.startIndex, this.startIndex + this.size + 2)
+      let translate = scrollTop / this.itemHeight;
+      this.startIndex = parseInt(translate);
+      this.transform = `translate3d(0, ${-scrollTop + this.startIndex * this.itemHeight}px, 0)`;
+      this.dataList = this.store.getTableData(this.startIndex, this.startIndex + this.size + 2);
     },
     handleMousewheel(ev) {
-      let delta = this.delta === undefined? this.itemHeight * 1.25: this.delta
+      let delta = this.delta === undefined ? this.itemHeight * 1.25 : this.delta;
       if (ev.wheelDelta < 0) {
         // 向下
-        this.scrollTop = Math.min(this.scrollTop + delta, this.scrollTopMax)
+        this.scrollTop = Math.min(this.scrollTop + delta, this.scrollTopMax);
       } else {
-        this.scrollTop = Math.max(this.scrollTop - delta, 0)
+        this.scrollTop = Math.max(this.scrollTop - delta, 0);
       }
       // this.store.setScrollTop(this.scrollTop)
-      this.update()
+      this.update();
     },
     updateByEvent(event) {
       // console.log(event)
-      this.scrollTop = event.verticalPercent * (this.dataAmount - this.size) * this.itemHeight
-      this.update()
+      this.scrollTop = event.verticalPercent * (this.dataAmount - this.size) * this.itemHeight;
+      this.update();
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

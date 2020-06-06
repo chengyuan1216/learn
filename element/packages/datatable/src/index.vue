@@ -9,13 +9,13 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import createStore from './store'
-import tableHeader from './table-header'
-import tableBody from './table-body'
-import scrollbar from './scrollbar'
+import Vue from 'vue';
+import createStore from './store';
+import tableHeader from './table-header';
+import tableBody from './table-body';
+import scrollbar from './scrollbar';
 
-let uid = 1
+let uid = 1;
 export default {
   name: 'ElDatatable',
   props: {
@@ -49,27 +49,27 @@ export default {
   watch: {
     data: {
       handler() {
-        this.setData(this.data)
+        this.setData(this.data);
       },
       immediate: true
     }
   },
   beforeCreate() {
-    this.tableId = 'el-datatable_' + uid++
-    this.store = createStore(this)
-    this.eventBus = new Vue()
+    this.tableId = 'el-datatable_' + uid++;
+    this.store = createStore(this);
+    this.eventBus = new Vue();
   },
   mounted() {
-    this.store.calcColumnWidth()
+    this.store.calcColumnWidth();
   },
   beforeDestroy() {
-    this.store = null
-    this.eventBus = null
+    this.store = null;
+    this.eventBus = null;
   },
   methods: {
     setData(data) {
-      this.store.setTableData(data)
-      this.$refs.body && this.$refs.body.setData(data)
+      this.store.setTableData(data);
+      this.$refs.body && this.$refs.body.setData(data);
     }
   }
 };
